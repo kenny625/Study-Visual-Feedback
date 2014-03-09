@@ -1,0 +1,27 @@
+body {
+    width: 980px;
+    height: 551px;
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+    border-color: #0000FF;
+    border-style: solid;
+}
+img {
+    width: 980px;
+    height: auto;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    margin: 0;
+    padding: 0;
+}
