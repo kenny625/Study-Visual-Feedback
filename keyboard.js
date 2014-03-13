@@ -17,7 +17,7 @@ var img = document.getElementsByTagName('img')[0];
 canvas.addEventListener('mousemove', function (event) {
     mousePos = getMousePos(canvas, event);
     var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-    //        writeMessa1ge(canvas, message);
+    //        writeMessage(canvas, message);
 
     //    console.log(mousePos.x);
 }, false);
@@ -81,6 +81,8 @@ document.onkeydown = function () {
             VoronoiCanvas.setAttribute("height", "551");
             insertAfter(document.getElementById("myCanvas"), VoronoiCanvas);
             Voronoi.init();
+    }else if(currentKey == 53) {
+        Voronoi.highlight();
     }
 }
 
@@ -257,10 +259,33 @@ var Voronoi = {
 			site = sites[nSites];
 			ctx.rect(site.x-2/3,site.y-2/3,2,2);
             ctx.fillStyle = "#FF0000";
+//            ctx.font = '30pt Calibri';
+//            ctx.fillText('Q', site.x - 15, site.y + 15);
     ctx.fillRect(site.x - 4, site.y - 4, 8, 8);
 			}
 		ctx.fill();
 		},
+    highlight: function(){
+        var cell = this.diagram.cells[this.sites[1].voronoiId];
+		// there is no guarantee a Voronoi cell will exist for any
+		// particular site
+		if (cell) {
+			var halfedges = cell.halfedges,
+				nHalfedges = halfedges.length;
+			if (nHalfedges > 2) {
+				v = halfedges[0].getStartpoint();
+				ctx.beginPath();
+				ctx.moveTo(v.x,v.y);
+				for (var iHalfedge=0; iHalfedge<nHalfedges; iHalfedge++) {
+					v = halfedges[iHalfedge].getEndpoint();
+					ctx.lineTo(v.x,v.y);
+					}
+                ctx.globalAlpha = 0.5;
+				ctx.fillStyle = '#faa';
+				ctx.fill();
+				}
+			}
+    },
 	};
 
 
