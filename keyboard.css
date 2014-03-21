@@ -16,7 +16,7 @@ body {
     border-color: #0000FF;
     border-style: solid;
 }
-#voronoiCanvas{
+#voronoiCanvas {
     position: absolute;
     left: 0;
     top: 0;
@@ -32,4 +32,8 @@ img {
     top: 0px;
     margin: 0;
     padding: 0;
+}
+#control {
+    position: absolute;
+    top: 560px;
 }

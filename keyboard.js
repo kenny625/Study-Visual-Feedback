@@ -1,5 +1,5 @@
 var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext("2d");
+var ctx1 = canvas.getContext("2d");
 var mousePos;
 var IFimg, IF, IFmotion;
 IFimg = new Object();
@@ -12,6 +12,8 @@ IFmotion = new Object();
 var keys = new Array();
 var currentKey = 0;
 var img = document.getElementsByTagName('img')[0];
+var characterPosition = new Array();
+var lastMousePos = new Object();
 
 
 canvas.addEventListener('mousemove', function (event) {
@@ -33,10 +35,16 @@ canvas.addEventListener('click', function (event) {
         IFimg.endX = mousePos.x;
         IFimg.endY = mousePos.y;
         currentKey = 0;
-    } 
+    }
 
 
 }, false);
+
+document.getElementById('setKey').addEventListener('click', function (event) {
+
+    Voronoi.writeKeyName(document.getElementById('keyName').value);
+    //    Voronoi.render();
+});
 
 
 function getMousePos(canvas, evt) {
@@ -62,33 +70,33 @@ document.onkeydown = function () {
         var deltaX = IFimg.endX - IFimg.startX;
         var deltaY = IFimg.endY - IFimg.startY;
         var degree = Math.atan2(deltaY, deltaX) / Math.PI * 180;
-        var scaleRatio = lineDistance(IF.startX, IF.startY, IF.endX, IF.endY)/lineDistance(IFimg.startX, IFimg.startY, IFimg.endX, IFimg.endY);
+        var scaleRatio = lineDistance(IF.startX, IF.startY, IF.endX, IF.endY) / lineDistance(IFimg.startX, IFimg.startY, IFimg.endX, IFimg.endY);
         scale(img, scaleRatio);
         rotate(img, IFimg.startX * scaleRatio, IFimg.startY * scaleRatio, (-1) * degree);
-        move(img, (-1) * (IFimg.startX * scaleRatio  - IF.startX) , (-1) * (IFimg.startY * scaleRatio - IF.startY));
-        
+        move(img, (-1) * (IFimg.startX * scaleRatio - IF.startX), (-1) * (IFimg.startY * scaleRatio - IF.startY));
+
         currentKey = 0;
-//        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#00FF00";
-    ctx.fillRect(470, 140, 8, 8);
-    ctx.fillRect(870, 140, 8, 8);
-    }else if (currentKey == 52){
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            var VoronoiCanvas = document.createElement("canvas");
-            VoronoiCanvas.setAttribute("id", "voronoiCanvas");
-            VoronoiCanvas.setAttribute("style", "cursor:crosshair");
-            VoronoiCanvas.setAttribute("width", "980");
-            VoronoiCanvas.setAttribute("height", "551");
-            insertAfter(document.getElementById("myCanvas"), VoronoiCanvas);
-            Voronoi.init();
-    }else if(currentKey == 53) {
+        //        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx1.fillStyle = "#00FF00";
+        ctx1.fillRect(470, 140, 8, 8);
+        ctx1.fillRect(870, 140, 8, 8);
+    } else if (currentKey == 52) {
+        ctx1.clearRect(0, 0, canvas.width, canvas.height);
+        var VoronoiCanvas = document.createElement("canvas");
+        VoronoiCanvas.setAttribute("id", "voronoiCanvas");
+        VoronoiCanvas.setAttribute("style", "cursor:crosshair");
+        VoronoiCanvas.setAttribute("width", "980");
+        VoronoiCanvas.setAttribute("height", "551");
+        insertAfter(document.getElementById("myCanvas"), VoronoiCanvas);
+        Voronoi.init();
+    } else if (currentKey == 53) {
         Voronoi.highlight();
     }
 }
 
 function drawPoint(x, y) {
-    ctx.fillStyle = "#FF0000";
-    ctx.fillRect(x - 4, y - 4, 8, 8);
+    ctx1.fillStyle = "#FF0000";
+    ctx1.fillRect(x - 4, y - 4, 8, 8);
 }
 
 function rotate(img, transformOriginX, transformOriginY, degree) {
@@ -101,7 +109,7 @@ function move(img, left, top) {
     img.style['top'] = top + 'px';
 }
 
-function scale(img, ratio){
+function scale(img, ratio) {
     img.style['width'] = img.offsetWidth * ratio + 'px';
 }
 
@@ -122,170 +130,221 @@ function insertAfter(referenceNode, newNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
+function setCharacterPosition() {
+    var pos = new Object();
+    //    pos.x = 
+    //    characterPosition['q'] = 
+}
+
 
 
 
 var Voronoi = {
-	voronoi: new Voronoi(),
-	sites: [],
-	diagram: null,
-	margin: 100,
-	canvas: null,
-	bbox: {xl:0,xr:980,yt:0,yb:551},
-
-	normalizeEventCoords: function(target,e) {
-		// http://www.quirksmode.org/js/events_properties.html#position
-		// =====
-		if (!e) {e=self.event;}
-		var x = 0;
-		var y = 0;
-		if (e.pageX || e.pageY) {
-			x = e.pageX;
-			y = e.pageY;
-			}
-		else if (e.clientX || e.clientY) {
-			x = e.clientX+document.body.scrollLeft+document.documentElement.scrollLeft;
-			y = e.clientY+document.body.scrollTop+document.documentElement.scrollTop;
-			}
-		// =====
-		return {x:x-target.offsetLeft,y:y-target.offsetTop};
-		},
-
-	init: function() {
-		var me = this;
-		this.canvas = document.getElementById('voronoiCanvas');
-//		this.canvas.onmousemove = function(e) {
-//			if (!me.sites.length) {return;}
-//			var site = me.sites[0];
-//			var mouse = me.normalizeEventCoords(me.canvas,e);
-//			site.x = mouse.x;
-//			site.y = mouse.y;
-//			me.diagram = me.voronoi.compute(me.sites,me.bbox);
-//			me.render();
-//			};
-		this.canvas.onclick = function(e) {
-			var mouse = me.normalizeEventCoords(me.canvas,e);
-			me.addSite(mouse.x,mouse.y);
-			me.render();
-			};
-//		this.randomSites(10,true);
-//        me.addSite(100,100);
-//        me.addSite(200,200);
-//        me.addSite(300,300);
-		this.render();
-		},
-
-	clearSites: function() {
-		// we want at least one site, the one tracking the mouse
-		this.sites = [{x:0,y:0}];
-		this.diagram = this.voronoi.compute(this.sites, this.bbox);
-		},
-
-	randomSites: function(n,clear) {
-		if (clear) {this.sites = [];}
-		var xo = this.margin;
-		var dx = this.canvas.width-this.margin*2;
-		var yo = this.margin;
-		var dy = this.canvas.height-this.margin*2;
-		for (var i=0; i<n; i++) {
-			this.sites.push({x:self.Math.round(xo+self.Math.random()*dx),y:self.Math.round(yo+self.Math.random()*dy)});
-			}
-		this.diagram = this.voronoi.compute(this.sites, this.bbox);
-		},
-
-	addSite: function(x,y) {
-		this.sites.push({x:x,y:y});
-		this.diagram = this.voronoi.compute(this.sites, this.bbox);
-		},
-
-	render: function() {
-		var ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		// background
-		ctx.globalAlpha = 0.5;
-//		ctx.beginPath();
-//		ctx.rect(0,0,this.canvas.width,this.canvas.height);
-//		ctx.fillStyle = '#fff';
-//		ctx.fill();
-//		ctx.strokeStyle = '#888';
-//		ctx.stroke();
-		// voronoi
-		if (!this.diagram) {return;}
-		ctx.strokeStyle='#000';
-		// edges
-		var edges = this.diagram.edges,
-			nEdges = edges.length,
-			v;
-		if (nEdges) {
-			var edge;
-			ctx.beginPath();
-			while (nEdges--) {
-				edge = edges[nEdges];
-				v = edge.va;
-				ctx.moveTo(v.x,v.y);
-				v = edge.vb;
-				ctx.lineTo(v.x,v.y);
-				}
-			ctx.stroke();
-			}
-		// how many sites do we have?
-		var sites = this.sites,
-			nSites = sites.length;
-		if (!nSites) {return;}
-		// highlight cell under mouse
-		var cell = this.diagram.cells[this.sites[0].voronoiId];
-		// there is no guarantee a Voronoi cell will exist for any
-		// particular site
-		if (cell) {
-			var halfedges = cell.halfedges,
-				nHalfedges = halfedges.length;
-			if (nHalfedges > 2) {
-				v = halfedges[0].getStartpoint();
-				ctx.beginPath();
-				ctx.moveTo(v.x,v.y);
-				for (var iHalfedge=0; iHalfedge<nHalfedges; iHalfedge++) {
-					v = halfedges[iHalfedge].getEndpoint();
-					ctx.lineTo(v.x,v.y);
-					}
-				ctx.fillStyle = '#faa';
-				ctx.fill();
-				}
-			}
-		// draw sites
-		var site;
-		ctx.beginPath();
-		ctx.fillStyle = '#44f';
-		while (nSites--) {
-			site = sites[nSites];
-			ctx.rect(site.x-2/3,site.y-2/3,2,2);
-            ctx.fillStyle = "#FF0000";
-//            ctx.font = '30pt Calibri';
-//            ctx.fillText('Q', site.x - 15, site.y + 15);
-    ctx.fillRect(site.x - 4, site.y - 4, 8, 8);
-			}
-		ctx.fill();
-		},
-    highlight: function(){
-        var cell = this.diagram.cells[this.sites[1].voronoiId];
-		// there is no guarantee a Voronoi cell will exist for any
-		// particular site
-		if (cell) {
-			var halfedges = cell.halfedges,
-				nHalfedges = halfedges.length;
-			if (nHalfedges > 2) {
-				v = halfedges[0].getStartpoint();
-				ctx.beginPath();
-				ctx.moveTo(v.x,v.y);
-				for (var iHalfedge=0; iHalfedge<nHalfedges; iHalfedge++) {
-					v = halfedges[iHalfedge].getEndpoint();
-					ctx.lineTo(v.x,v.y);
-					}
-                ctx.globalAlpha = 0.5;
-				ctx.fillStyle = '#faa';
-				ctx.fill();
-				}
-			}
+    voronoi: new Voronoi(),
+    sites: [],
+    diagram: null,
+    margin: 100,
+    canvas: null,
+    bbox: {
+        xl: 0,
+        xr: 980,
+        yt: 75,
+        yb: 551
     },
-	};
+    ctx: null,
 
+    normalizeEventCoords: function (target, e) {
+        // http://www.quirksmode.org/js/events_properties.html#position
+        // =====
+        if (!e) {
+            e = self.event;
+        }
+        var x = 0;
+        var y = 0;
+        if (e.pageX || e.pageY) {
+            x = e.pageX;
+            y = e.pageY;
+        } else if (e.clientX || e.clientY) {
+            x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+            y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+        }
+        // =====
+        return {
+            x: x - target.offsetLeft,
+            y: y - target.offsetTop
+        };
+    },
 
+    init: function () {
+        var me = this;
+        this.canvas = document.getElementById('voronoiCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        //		this.canvas.onmousemove = function(e) {
+        //			if (!me.sites.length) {return;}
+        //			var site = me.sites[0];
+        //			var mouse = me.normalizeEventCoords(me.canvas,e);
+        //			site.x = mouse.x;
+        //			site.y = mouse.y;
+        //			me.diagram = me.voronoi.compute(me.sites,me.bbox);
+        //			me.render();
+        //			};
+        this.canvas.onclick = function (e) {
+            var mouse = me.normalizeEventCoords(me.canvas, e);
+            me.addSite(mouse.x, mouse.y);
+            lastMousePos.x = mouse.x;
+            lastMousePos.y = mouse.y;
+            me.writeKeyPoint(mouse);
+            me.render();
+        };
+        //		this.randomSites(10,true);
+        //        me.addSite(100,100);
+        //        me.addSite(200,200);
+        //        me.addSite(300,300);
+        this.render();
+    },
+
+    clearSites: function () {
+        // we want at least one site, the one tracking the mouse
+        this.sites = [{
+            x: 0,
+            y: 0
+        }];
+        this.diagram = this.voronoi.compute(this.sites, this.bbox);
+    },
+
+    randomSites: function (n, clear) {
+        if (clear) {
+            this.sites = [];
+        }
+        var xo = this.margin;
+        var dx = this.canvas.width - this.margin * 2;
+        var yo = this.margin;
+        var dy = this.canvas.height - this.margin * 2;
+        for (var i = 0; i < n; i++) {
+            this.sites.push({
+                x: self.Math.round(xo + self.Math.random() * dx),
+                y: self.Math.round(yo + self.Math.random() * dy)
+            });
+        }
+        this.diagram = this.voronoi.compute(this.sites, this.bbox);
+    },
+
+    addSite: function (x, y) {
+        this.sites.push({
+            x: x,
+            y: y
+        });
+        this.diagram = this.voronoi.compute(this.sites, this.bbox);
+    },
+
+    writeKeyName: function (key) {
+        ctx1.clearRect(lastMousePos.x - 5, lastMousePos.y - 5, 10, 10);
+        ctx1.font = '30pt Calibri';
+        ctx1.fillStyle = '#00FF00';
+        ctx1.fillText(key, lastMousePos.x - 10, lastMousePos.y + 10);
+    },
+
+    writeKeyPoint: function (site) {
+        //    while (nSites--) {
+        //            site = sites[nSites];
+        //            ctx1.rect(site.x - 2 / 3, site.y - 2 / 3, 2, 2);
+        //            ctx1.fillStyle = "#FF0000";
+        //            //            ctx.font = '30pt Calibri';
+        //            //            ctx.fillText('Q', site.x - 15, site.y + 15);
+        //            ctx1.fillRect(site.x - 4, site.y - 4, 8, 8);
+        //        }
+        ctx1.rect(site.x - 2 / 3, site.y - 2 / 3, 2, 2);
+        ctx1.fillStyle = "#FF0000";
+        ctx1.fillRect(site.x - 4, site.y - 4, 8, 8);
+    },
+
+    getWhichCell: function (){
+    
+    },
+
+    render: function () {
+        var ctx = this.ctx;
+        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // background
+        ctx.globalAlpha = 0.5;
+        //		ctx.beginPath();
+        //		ctx.rect(0,0,this.canvas.width,this.canvas.height);
+        //		ctx.fillStyle = '#fff';
+        //		ctx.fill();
+        //		ctx.strokeStyle = '#888';
+        //		ctx.stroke();
+        // voronoi
+        if (!this.diagram) {
+            return;
+        }
+        ctx.strokeStyle = '#000';
+        // edges
+        var edges = this.diagram.edges,
+            nEdges = edges.length,
+            v;
+        if (nEdges) {
+            var edge;
+            ctx.beginPath();
+            while (nEdges--) {
+                edge = edges[nEdges];
+                v = edge.va;
+                ctx.moveTo(v.x, v.y);
+                v = edge.vb;
+                ctx.lineTo(v.x, v.y);
+            }
+            ctx.stroke();
+        }
+        // how many sites do we have?
+        var sites = this.sites,
+            nSites = sites.length;
+        if (!nSites) {
+            return;
+        }
+        // highlight cell under mouse
+        var cell = this.diagram.cells[this.sites[0].voronoiId];
+        // there is no guarantee a Voronoi cell will exist for any
+        // particular site
+        if (cell) {
+            var halfedges = cell.halfedges,
+                nHalfedges = halfedges.length;
+            if (nHalfedges > 2) {
+                v = halfedges[0].getStartpoint();
+                ctx.beginPath();
+                ctx.moveTo(v.x, v.y);
+                for (var iHalfedge = 0; iHalfedge < nHalfedges; iHalfedge++) {
+                    v = halfedges[iHalfedge].getEndpoint();
+                    ctx.lineTo(v.x, v.y);
+                }
+                ctx.fillStyle = '#faa';
+                ctx.fill();
+            }
+        }
+        // draw sites
+        var site;
+        ctx.beginPath();
+        ctx.fillStyle = '#44f';
+
+        ctx.fill();
+    },
+    highlight: function () {
+        var cell = this.diagram.cells[this.sites[1].voronoiId];
+        // there is no guarantee a Voronoi cell will exist for any
+        // particular site
+        if (cell) {
+            var halfedges = cell.halfedges,
+                nHalfedges = halfedges.length;
+            if (nHalfedges > 2) {
+                v = halfedges[0].getStartpoint();
+                ctx.beginPath();
+                ctx.moveTo(v.x, v.y);
+                for (var iHalfedge = 0; iHalfedge < nHalfedges; iHalfedge++) {
+                    v = halfedges[iHalfedge].getEndpoint();
+                    ctx.lineTo(v.x, v.y);
+                }
+                ctx.globalAlpha = 0.5;
+                ctx.fillStyle = '#faa';
+                ctx.fill();
+            }
+        }
+    },
+};
