@@ -14,6 +14,25 @@ var currentKey = 0;
 var img = document.getElementsByTagName('img')[0];
 var characterPosition = new Array();
 var lastMousePos = new Object();
+var mode = 0; //0 add new site, 1 rearrange site  
+
+if ("WebSocket" in window) {
+    var ws = new WebSocket("ws://localhost:8080");
+    ws.onopen = function () {
+        // Web Socket is connected, send data using send()
+        ws.send("Message to send");
+    };
+    ws.onmessage = function (evt) {
+        var received_msg = evt.data;
+        console.log(received_msg);
+    };
+    ws.onclose = function () {
+        // websocket is closed.
+    };
+} else {
+    // The browser doesn't support WebSocket
+    console.log("WebSocket NOT supported by your Browser!");
+}
 
 
 canvas.addEventListener('mousemove', function (event) {
@@ -41,9 +60,15 @@ canvas.addEventListener('click', function (event) {
 }, false);
 
 document.getElementById('setKey').addEventListener('click', function (event) {
-
     Voronoi.writeKeyName(document.getElementById('keyName').value);
-    //    Voronoi.render();
+});
+
+document.getElementById('setMode').addEventListener('click', function (event) {
+    if (document.getElementById('modeSelect').value == 'add') {
+        mode = 0;
+    } else {
+        mode = 1;
+    }
 });
 
 
@@ -90,7 +115,8 @@ document.onkeydown = function () {
         insertAfter(document.getElementById("myCanvas"), VoronoiCanvas);
         Voronoi.init();
     } else if (currentKey == 53) {
-        Voronoi.highlight();
+        Voronoi.highlight(Voronoi.getWhichCell(500, 500));
+
     }
 }
 
@@ -190,11 +216,19 @@ var Voronoi = {
         //			};
         this.canvas.onclick = function (e) {
             var mouse = me.normalizeEventCoords(me.canvas, e);
-            me.addSite(mouse.x, mouse.y);
-            lastMousePos.x = mouse.x;
-            lastMousePos.y = mouse.y;
-            me.writeKeyPoint(mouse);
-            me.render();
+            if (mode == 0) {
+                me.addSite(mouse.x, mouse.y);
+                lastMousePos.x = mouse.x;
+                lastMousePos.y = mouse.y;
+                me.writeKeyPoint(mouse);
+                me.render();
+            } else if (mode == 1) {
+                me.sites.splice(me.getWhichCell(mouse.x, mouse.y), 1);
+                me.addSite(mouse.x, mouse.y);
+                me.writeKeyPoint(mouse);
+                me.render();
+            }
+
         };
         //		this.randomSites(10,true);
         //        me.addSite(100,100);
@@ -258,8 +292,17 @@ var Voronoi = {
         ctx1.fillRect(site.x - 4, site.y - 4, 8, 8);
     },
 
-    getWhichCell: function (){
-    
+    getWhichCell: function (x, y) {
+        var cellIndex, minDistance = 99999,
+            distance;
+        for (var i = 0; i < this.sites.length; i++) {
+            distance = lineDistance(x, y, this.sites[i].x, this.sites[i].y);
+            if (distance < minDistance) {
+                minDistance = distance;
+                cellIndex = i;
+            }
+        }
+        return cellIndex;
     },
 
     render: function () {
@@ -300,25 +343,25 @@ var Voronoi = {
         if (!nSites) {
             return;
         }
-        // highlight cell under mouse
-        var cell = this.diagram.cells[this.sites[0].voronoiId];
-        // there is no guarantee a Voronoi cell will exist for any
-        // particular site
-        if (cell) {
-            var halfedges = cell.halfedges,
-                nHalfedges = halfedges.length;
-            if (nHalfedges > 2) {
-                v = halfedges[0].getStartpoint();
-                ctx.beginPath();
-                ctx.moveTo(v.x, v.y);
-                for (var iHalfedge = 0; iHalfedge < nHalfedges; iHalfedge++) {
-                    v = halfedges[iHalfedge].getEndpoint();
-                    ctx.lineTo(v.x, v.y);
-                }
-                ctx.fillStyle = '#faa';
-                ctx.fill();
-            }
-        }
+        //        // highlight cell under mouse
+        //        var cell = this.diagram.cells[this.sites[0].voronoiId];
+        //        // there is no guarantee a Voronoi cell will exist for any
+        //        // particular site
+        //        if (cell) {
+        //            var halfedges = cell.halfedges,
+        //                nHalfedges = halfedges.length;
+        //            if (nHalfedges > 2) {
+        //                v = halfedges[0].getStartpoint();
+        //                ctx.beginPath();
+        //                ctx.moveTo(v.x, v.y);
+        //                for (var iHalfedge = 0; iHalfedge < nHalfedges; iHalfedge++) {
+        //                    v = halfedges[iHalfedge].getEndpoint();
+        //                    ctx.lineTo(v.x, v.y);
+        //                }
+        //                ctx.fillStyle = '#faa';
+        //                ctx.fill();
+        //            }
+        //        }
         // draw sites
         var site;
         ctx.beginPath();
@@ -326,8 +369,10 @@ var Voronoi = {
 
         ctx.fill();
     },
-    highlight: function () {
-        var cell = this.diagram.cells[this.sites[1].voronoiId];
+
+    highlight: function (cellIndex) {
+        ctx = this.ctx;
+        var cell = this.diagram.cells[this.sites[cellIndex].voronoiId];
         // there is no guarantee a Voronoi cell will exist for any
         // particular site
         if (cell) {
