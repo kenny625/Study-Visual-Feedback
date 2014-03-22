@@ -15,16 +15,31 @@ var img = document.getElementsByTagName('img')[0];
 var characterPosition = new Array();
 var lastMousePos = new Object();
 var mode = 0; //0 add new site, 1 rearrange site  
+var ws;
 
 if ("WebSocket" in window) {
-    var ws = new WebSocket("ws://localhost:8080");
+    ws = new WebSocket("ws://localhost:8080");
     ws.onopen = function () {
         // Web Socket is connected, send data using send()
-        ws.send("Message to send");
     };
     ws.onmessage = function (evt) {
         var received_msg = evt.data;
+        console.log(evt);
         console.log(received_msg);
+        var received_msg_obj = JSON.parse(received_msg);
+        switch(received_msg_obj.action){
+           case "loadLayout":
+                Voronoi.sites = received_msg_obj.layout;
+                Voronoi.diagram = Voronoi.voronoi.compute(Voronoi.sites, Voronoi.bbox);
+                console.log(Voronoi.sites);
+                Voronoi.render();
+                for(var i=0;i<Voronoi.sites.length;i++){
+                    Voronoi.writeKeyName(Voronoi.sites[i].key, Voronoi.sites[i].x, Voronoi.sites[i].y);
+                }
+                break;
+            default:
+        }
+        
     };
     ws.onclose = function () {
         // websocket is closed.
@@ -60,7 +75,8 @@ canvas.addEventListener('click', function (event) {
 }, false);
 
 document.getElementById('setKey').addEventListener('click', function (event) {
-    Voronoi.writeKeyName(document.getElementById('keyName').value);
+    Voronoi.writeKeyName(document.getElementById('keyName').value, lastMousePos.x, lastMousePos.y);
+    
 });
 
 document.getElementById('setMode').addEventListener('click', function (event) {
@@ -71,6 +87,18 @@ document.getElementById('setMode').addEventListener('click', function (event) {
     }
 });
 
+document.getElementById('save').addEventListener('click', function (event) {
+    var layoutObj = new Object();
+    layoutObj.layout = Voronoi.sites;
+    layoutObj.action = "saveLayout";
+    ws.send(JSON.stringify(layoutObj));
+});
+
+document.getElementById('load').addEventListener('click', function (event) {
+    var loadObj = new Object();
+    loadObj.action = "loadLayout";
+    ws.send(JSON.stringify(loadObj));
+});
 
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
@@ -271,11 +299,12 @@ var Voronoi = {
         this.diagram = this.voronoi.compute(this.sites, this.bbox);
     },
 
-    writeKeyName: function (key) {
-        ctx1.clearRect(lastMousePos.x - 5, lastMousePos.y - 5, 10, 10);
+    writeKeyName: function (key, x, y) {
+        ctx1.clearRect(x - 5, y - 5, 10, 10);
         ctx1.font = '30pt Calibri';
         ctx1.fillStyle = '#00FF00';
-        ctx1.fillText(key, lastMousePos.x - 10, lastMousePos.y + 10);
+        ctx1.fillText(key, x - 10, y + 10);
+        this.sites[this.getWhichCell(x, y)].key = key;
     },
 
     writeKeyPoint: function (site) {
