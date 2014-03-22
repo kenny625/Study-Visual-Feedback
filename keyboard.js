@@ -251,9 +251,14 @@ var Voronoi = {
                 me.writeKeyPoint(mouse);
                 me.render();
             } else if (mode == 1) {
-                me.sites.splice(me.getWhichCell(mouse.x, mouse.y), 1);
+                var cellIndex = me.getWhichCell(mouse.x, mouse.y);
+                var key = me.sites[cellIndex].key;
+                var oldX = me.sites[cellIndex].x, oldY = me.sites[cellIndex].y;
+                me.sites.splice(cellIndex, 1);
                 me.addSite(mouse.x, mouse.y);
-                me.writeKeyPoint(mouse);
+                me.sites[me.sites.length-1].key = key; 
+                me.clearKeyName(oldX, oldY);
+                me.writeKeyName(key, mouse.x, mouse.y);
                 me.render();
             }
 
@@ -306,6 +311,10 @@ var Voronoi = {
         ctx1.fillText(key, x - 10, y + 10);
         this.sites[this.getWhichCell(x, y)].key = key;
     },
+    
+    clearKeyName: function (x, y){
+        ctx1.clearRect(x - 15, y - 15, 40, 40);
+    }, 
 
     writeKeyPoint: function (site) {
         //    while (nSites--) {
