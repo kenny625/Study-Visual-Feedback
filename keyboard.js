@@ -18,6 +18,139 @@ var mode = 0; //0 add new site, 1 rearrange site
 var ws;
 var scaleRatio, degree;
 var imgAdjust = false;
+var defaultLayoutObj = {
+    "layout": [{
+        "x": 65,
+        "y": 184,
+        "voronoiId": 9,
+        "key": "Q"
+    }, {
+        "x": 153,
+        "y": 117,
+        "voronoiId": 0,
+        "key": "W"
+    }, {
+        "x": 242,
+        "y": 169,
+        "voronoiId": 7,
+        "key": "E"
+    }, {
+        "x": 345,
+        "y": 177,
+        "voronoiId": 8,
+        "key": "R"
+    }, {
+        "x": 456,
+        "y": 149,
+        "voronoiId": 6,
+        "key": "T"
+    }, {
+        "x": 545,
+        "y": 138,
+        "voronoiId": 5,
+        "key": "Y"
+    }, {
+        "x": 616,
+        "y": 129,
+        "voronoiId": 3,
+        "key": "U"
+    }, {
+        "x": 678,
+        "y": 132,
+        "voronoiId": 4,
+        "key": "I"
+    }, {
+        "x": 730,
+        "y": 125,
+        "voronoiId": 1,
+        "key": "O"
+    }, {
+        "x": 801,
+        "y": 126,
+        "voronoiId": 2,
+        "key": "P"
+    }, {
+        "x": 106,
+        "y": 326,
+        "voronoiId": 19,
+        "key": "A"
+    }, {
+        "x": 240,
+        "y": 317,
+        "voronoiId": 17,
+        "key": "S"
+    }, {
+        "x": 345,
+        "y": 310,
+        "voronoiId": 16,
+        "key": "D"
+    }, {
+        "x": 473,
+        "y": 257,
+        "voronoiId": 15,
+        "key": "F"
+    }, {
+        "x": 592,
+        "y": 241,
+        "voronoiId": 14,
+        "key": "G"
+    }, {
+        "x": 678,
+        "y": 229,
+        "voronoiId": 13,
+        "key": "H"
+    }, {
+        "x": 746,
+        "y": 226,
+        "voronoiId": 12,
+        "key": "J"
+    }, {
+        "x": 806,
+        "y": 218,
+        "voronoiId": 11,
+        "key": "K"
+    }, {
+        "x": 885,
+        "y": 216,
+        "voronoiId": 10,
+        "key": "L"
+    }, {
+        "x": 104,
+        "y": 468,
+        "voronoiId": 25,
+        "key": "Z"
+    }, {
+        "x": 474,
+        "y": 353,
+        "voronoiId": 23,
+        "key": "X"
+    }, {
+        "x": 576,
+        "y": 356,
+        "voronoiId": 24,
+        "key": "C"
+    }, {
+        "x": 645,
+        "y": 348,
+        "voronoiId": 22,
+        "key": "V"
+    }, {
+        "x": 704,
+        "y": 338,
+        "voronoiId": 21,
+        "key": "B"
+    }, {
+        "x": 761,
+        "y": 333,
+        "voronoiId": 20,
+        "key": "N"
+    }, {
+        "x": 846,
+        "y": 317,
+        "voronoiId": 18,
+        "key": "M"
+    }]
+};
 
 if ("WebSocket" in window) {
     ws = new WebSocket("ws://localhost:8080");
@@ -26,12 +159,11 @@ if ("WebSocket" in window) {
     };
     ws.onmessage = function (evt) {
         var received_msg = evt.data;
-        console.log(evt);
         console.log(received_msg);
         var received_msg_obj = JSON.parse(received_msg);
         switch (received_msg_obj.action) {
         case "loadLayout":
-            if (imgAdjust == false) {console.log("adjust");
+            if (imgAdjust == false) {
                 scale(img, received_msg_obj.scaleRatio);
                 rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * received_msg_obj.degree);
                 move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
@@ -85,6 +217,15 @@ canvas.addEventListener('click', function (event) {
 
 
 }, false);
+
+document.getElementById('loadDefault').addEventListener('click', function (event) {
+    Voronoi.sites = defaultLayoutObj.layout;
+    Voronoi.diagram = Voronoi.voronoi.compute(Voronoi.sites, Voronoi.bbox);
+    Voronoi.render();
+    for (var i = 0; i < Voronoi.sites.length; i++) {
+        Voronoi.writeKeyName(Voronoi.sites[i].key, Voronoi.sites[i].x, Voronoi.sites[i].y);
+    }
+});
 
 document.getElementById('setName').addEventListener('click', function (event) {
     var nameObj = new Object();
@@ -338,7 +479,7 @@ var Voronoi = {
     },
 
     clearKeyName: function (x, y) {
-        ctx1.clearRect(x - 15, y - 15, 40, 40);
+        ctx1.clearRect(x - 20, y - 20, 45, 45);
     },
 
     writeKeyPoint: function (site) {
