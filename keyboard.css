@@ -37,3 +37,7 @@ img {
     position: absolute;
     top: 560px;
 }
+
+input{
+    width: 100px;
+}

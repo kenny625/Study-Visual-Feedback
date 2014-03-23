@@ -16,6 +16,8 @@ var characterPosition = new Array();
 var lastMousePos = new Object();
 var mode = 0; //0 add new site, 1 rearrange site  
 var ws;
+var scaleRatio, degree;
+var imgAdjust = false;
 
 if ("WebSocket" in window) {
     ws = new WebSocket("ws://localhost:8080");
@@ -27,19 +29,29 @@ if ("WebSocket" in window) {
         console.log(evt);
         console.log(received_msg);
         var received_msg_obj = JSON.parse(received_msg);
-        switch(received_msg_obj.action){
-           case "loadLayout":
-                Voronoi.sites = received_msg_obj.layout;
-                Voronoi.diagram = Voronoi.voronoi.compute(Voronoi.sites, Voronoi.bbox);
-                console.log(Voronoi.sites);
-                Voronoi.render();
-                for(var i=0;i<Voronoi.sites.length;i++){
-                    Voronoi.writeKeyName(Voronoi.sites[i].key, Voronoi.sites[i].x, Voronoi.sites[i].y);
-                }
-                break;
-            default:
+        switch (received_msg_obj.action) {
+        case "loadLayout":
+            if (imgAdjust == false) {console.log("adjust");
+                scale(img, received_msg_obj.scaleRatio);
+                rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * received_msg_obj.degree);
+                move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
+                imgAdjust = true;
+            }
+            if (document.getElementById('voronoiCanvas') == null) {
+                insertVoronoiCanvas();
+                Voronoi.init();
+            }
+            Voronoi.sites = received_msg_obj.layout;
+            Voronoi.diagram = Voronoi.voronoi.compute(Voronoi.sites, Voronoi.bbox);
+            console.log(Voronoi.sites);
+            Voronoi.render();
+            for (var i = 0; i < Voronoi.sites.length; i++) {
+                Voronoi.writeKeyName(Voronoi.sites[i].key, Voronoi.sites[i].x, Voronoi.sites[i].y);
+            }
+            break;
+        default:
         }
-        
+
     };
     ws.onclose = function () {
         // websocket is closed.
@@ -74,9 +86,16 @@ canvas.addEventListener('click', function (event) {
 
 }, false);
 
+document.getElementById('setName').addEventListener('click', function (event) {
+    var nameObj = new Object();
+    nameObj.action = "setName";
+    nameObj.userName = document.getElementById('userName').value;
+    ws.send(JSON.stringify(nameObj));
+});
+
 document.getElementById('setKey').addEventListener('click', function (event) {
     Voronoi.writeKeyName(document.getElementById('keyName').value, lastMousePos.x, lastMousePos.y);
-    
+
 });
 
 document.getElementById('setMode').addEventListener('click', function (event) {
@@ -91,6 +110,12 @@ document.getElementById('save').addEventListener('click', function (event) {
     var layoutObj = new Object();
     layoutObj.layout = Voronoi.sites;
     layoutObj.action = "saveLayout";
+    layoutObj.startX = IFimg.startX;
+    layoutObj.startY = IFimg.startY;
+    layoutObj.endX = IFimg.endX;
+    layoutObj.endY = IFimg.endY;
+    layoutObj.scaleRatio = scaleRatio;
+    layoutObj.degree = degree;
     ws.send(JSON.stringify(layoutObj));
 });
 
@@ -122,12 +147,12 @@ document.onkeydown = function () {
     if (currentKey == 51) {
         var deltaX = IFimg.endX - IFimg.startX;
         var deltaY = IFimg.endY - IFimg.startY;
-        var degree = Math.atan2(deltaY, deltaX) / Math.PI * 180;
-        var scaleRatio = lineDistance(IF.startX, IF.startY, IF.endX, IF.endY) / lineDistance(IFimg.startX, IFimg.startY, IFimg.endX, IFimg.endY);
+        degree = Math.atan2(deltaY, deltaX) / Math.PI * 180;
+        scaleRatio = lineDistance(IF.startX, IF.startY, IF.endX, IF.endY) / lineDistance(IFimg.startX, IFimg.startY, IFimg.endX, IFimg.endY);
         scale(img, scaleRatio);
         rotate(img, IFimg.startX * scaleRatio, IFimg.startY * scaleRatio, (-1) * degree);
         move(img, (-1) * (IFimg.startX * scaleRatio - IF.startX), (-1) * (IFimg.startY * scaleRatio - IF.startY));
-
+        imgAdjust = true;
         currentKey = 0;
         //        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx1.fillStyle = "#00FF00";
@@ -135,12 +160,7 @@ document.onkeydown = function () {
         ctx1.fillRect(870, 140, 8, 8);
     } else if (currentKey == 52) {
         ctx1.clearRect(0, 0, canvas.width, canvas.height);
-        var VoronoiCanvas = document.createElement("canvas");
-        VoronoiCanvas.setAttribute("id", "voronoiCanvas");
-        VoronoiCanvas.setAttribute("style", "cursor:crosshair");
-        VoronoiCanvas.setAttribute("width", "980");
-        VoronoiCanvas.setAttribute("height", "551");
-        insertAfter(document.getElementById("myCanvas"), VoronoiCanvas);
+        insertVoronoiCanvas();
         Voronoi.init();
     } else if (currentKey == 53) {
         Voronoi.highlight(Voronoi.getWhichCell(500, 500));
@@ -170,13 +190,10 @@ function scale(img, ratio) {
 function lineDistance(x1, y1, x2, y2) {
     var xs = 0;
     var ys = 0;
-
     xs = x2 - x1;
     xs = xs * xs;
-
     ys = y2 - y1;
     ys = ys * ys;
-
     return Math.sqrt(xs + ys);
 }
 
@@ -190,7 +207,14 @@ function setCharacterPosition() {
     //    characterPosition['q'] = 
 }
 
-
+function insertVoronoiCanvas() {
+    var VoronoiCanvas = document.createElement("canvas");
+    VoronoiCanvas.setAttribute("id", "voronoiCanvas");
+    VoronoiCanvas.setAttribute("style", "cursor:crosshair");
+    VoronoiCanvas.setAttribute("width", "980");
+    VoronoiCanvas.setAttribute("height", "551");
+    insertAfter(document.getElementById("myCanvas"), VoronoiCanvas);
+}
 
 
 var Voronoi = {
@@ -253,10 +277,11 @@ var Voronoi = {
             } else if (mode == 1) {
                 var cellIndex = me.getWhichCell(mouse.x, mouse.y);
                 var key = me.sites[cellIndex].key;
-                var oldX = me.sites[cellIndex].x, oldY = me.sites[cellIndex].y;
+                var oldX = me.sites[cellIndex].x,
+                    oldY = me.sites[cellIndex].y;
                 me.sites.splice(cellIndex, 1);
                 me.addSite(mouse.x, mouse.y);
-                me.sites[me.sites.length-1].key = key; 
+                me.sites[me.sites.length - 1].key = key;
                 me.clearKeyName(oldX, oldY);
                 me.writeKeyName(key, mouse.x, mouse.y);
                 me.render();
@@ -311,10 +336,10 @@ var Voronoi = {
         ctx1.fillText(key, x - 10, y + 10);
         this.sites[this.getWhichCell(x, y)].key = key;
     },
-    
-    clearKeyName: function (x, y){
+
+    clearKeyName: function (x, y) {
         ctx1.clearRect(x - 15, y - 15, 40, 40);
-    }, 
+    },
 
     writeKeyPoint: function (site) {
         //    while (nSites--) {
