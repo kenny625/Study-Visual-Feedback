@@ -16,9 +16,14 @@ wss.on('connection', function(ws) {
                 break;
             case "loadLayout":
                 layoutObj = new Object();
-                layoutObj = JSON.parse(fs.readFileSync(filepath + userName + ".txt").toString());
+                try{
+                    layoutObj = JSON.parse(fs.readFileSync(filepath + userName + ".txt").toString());
+                }catch(e){
+                    console.log(e);
+                }
                 layoutObj.action = "loadLayout";
-                ws.send(JSON.stringify(layoutObj));
+                wss.broadcast(JSON.stringify(layoutObj));
+//                ws.send(JSON.stringify(layoutObj));
                 break;
             case "setName":
                 userName = message_obj.userName;
@@ -27,13 +32,16 @@ wss.on('connection', function(ws) {
             default:
         }
     });
-//    ws.send('something');
     
 });
+
+wss.broadcast = function(data){
+                    for(var i in this.clients){
+                        this.clients[i].send(data);
+                    }
+                };
 
 
 function writeToFile(data) {
     fs.writeFileSync(filepath + userName + ".txt", data);
 }
-
-//fs.readFileSync("/Volumes/RamDisk/libsvm-3.17/test2").toString();

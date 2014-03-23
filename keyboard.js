@@ -14,7 +14,7 @@ var currentKey = 0;
 var img = document.getElementsByTagName('img')[0];
 var characterPosition = new Array();
 var lastMousePos = new Object();
-var mode = 0; //0 add new site, 1 rearrange site  
+var mode = 1; //0 add new site, 1 rearrange site  
 var ws;
 var scaleRatio, degree;
 var imgAdjust = false;
