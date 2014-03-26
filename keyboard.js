@@ -192,7 +192,7 @@ if ("WebSocket" in window) {
                 imgAdjust = true;
             }
             if (document.getElementById('voronoiCanvas') == null) {
-                insertVoronoiCanvas();
+                insertCanvas('voronoiCanvas');
                 Voronoi.init();
             }
             Voronoi.sites = received_msg_obj.layout;
@@ -347,8 +347,26 @@ document.getElementById('startBtn').addEventListener('click', function (event) {
 });
 
 document.getElementById('setSentence').addEventListener('click', function (event) {
+    document.getElementById('textOutputUpper').innerHTML = "";
+    textOutput = "";
     document.getElementById('textOutputLower').innerHTML = document.getElementById('sentence').value;
 });
+
+document.getElementById('QWERTY').addEventListener('click', function (event) {
+    if(Voronoi.canvas != null){
+        Voronoi.canvas.clearRect(0, 0, Voronoi.canvas.width, Voronoi.canvas.height);
+    }
+    var QWERTYcanvas = document.getElementById('QWERTYcanvas');
+    if(QWERTYcanvas == null){
+        insertCanvas('QWERTYcanvas');
+    }else{
+        QWERTYcanvas.clearRect(0, 0, QWERTYcanvas.width, QWERTYcanvas.height);
+    }
+    
+    var QWERTYctx = QWERTYcanvas.getContext("2d");
+    
+    
+});;
 
 function buildKeyIndex() {
     keyIndex = new Array();
@@ -392,7 +410,7 @@ document.onkeydown = function () {
         ctx1.fillRect(870, 140, 8, 8);
     } else if (currentKey == 52) {
         ctx1.clearRect(0, 0, canvas.width, canvas.height);
-        insertVoronoiCanvas();
+        insertCanvas('voronoiCanvas');
         Voronoi.init();
     }
 }
@@ -436,13 +454,13 @@ function setCharacterPosition() {
     //    characterPosition['q'] = 
 }
 
-function insertVoronoiCanvas() {
-    var VoronoiCanvas = document.createElement("canvas");
-    VoronoiCanvas.setAttribute("id", "voronoiCanvas");
-    VoronoiCanvas.setAttribute("style", "cursor:crosshair");
-    VoronoiCanvas.setAttribute("width", "980");
-    VoronoiCanvas.setAttribute("height", "551");
-    insertAfter(document.getElementById("myCanvas"), VoronoiCanvas);
+function insertCanvas(id) {
+    var newCanvas = document.createElement("canvas");
+    newCanvas.setAttribute("id", id);
+    newCanvas.setAttribute("style", "cursor:crosshair");
+    newCanvas.setAttribute("width", "980");
+    newCanvas.setAttribute("height", "551");
+    insertAfter(document.getElementById("myCanvas"), newCanvas);
 }
 
 function setCursor(x, y) {
@@ -636,11 +654,11 @@ var Voronoi = {
             ctx.stroke();
         }
         // how many sites do we have?
-        var sites = this.sites,
-            nSites = sites.length;
-        if (!nSites) {
-            return;
-        }
+//        var sites = this.sites,
+//            nSites = sites.length;
+//        if (!nSites) {
+//            return;
+//        }
         //        // highlight cell under mouse
         //        var cell = this.diagram.cells[this.sites[0].voronoiId];
         //        // there is no guarantee a Voronoi cell will exist for any
@@ -661,11 +679,11 @@ var Voronoi = {
         //            }
         //        }
         // draw sites
-        var site;
-        ctx.beginPath();
-        ctx.fillStyle = '#44f';
-
-        ctx.fill();
+//        var site;
+//        ctx.beginPath();
+//        ctx.fillStyle = '#44f';
+//
+//        ctx.fill();
     },
 
     highlight: function (cellIndex) {
