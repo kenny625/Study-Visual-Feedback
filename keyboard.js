@@ -12,16 +12,16 @@ IF.endX = 870;
 IF.endY = 140;
 var leftUp = new Object();
 leftUp.x = 0;
-leftUp.y = 140;
+leftUp.y = 80;
 var leftDown = new Object();
 leftDown.x = 0;
 leftDown.y = 410;
 var rightUp = new Object();
-leftDown.x = 870;
-leftDown.y = 140;
+rightUp.x = 870;
+rightUp.y = 80;
 var rightDown = new Object();
-leftDown.x = 870;
-leftDown.y = 410;
+rightDown.x = 870;
+rightDown.y = 410;
 IFmotion = new Object();
 var keys = new Array();
 var currentKey = 0;
@@ -371,14 +371,17 @@ document.getElementById('setSentence').addEventListener('click', function (event
 });
 
 document.getElementById('QWERTY').addEventListener('click', function (event) {
+    ctx1.clearRect(0, 0, canvas.width, canvas.height);
     if (Voronoi.canvas != null) {
-        Voronoi.canvas.clearRect(0, 0, Voronoi.canvas.width, Voronoi.canvas.height);
+        Voronoi.ctx.clearRect(0, 0, Voronoi.canvas.width, Voronoi.canvas.height);
     }
     var QWERTYcanvas = document.getElementById('QWERTYcanvas');
     if (QWERTYcanvas == null) {
         insertCanvas('QWERTYcanvas');
+        QWERTYcanvas = document.getElementById('QWERTYcanvas');
     } else {
-        QWERTYcanvas.clearRect(0, 0, QWERTYcanvas.width, QWERTYcanvas.height);
+        QWERTYctx = QWERTYcanvas.getContext("2d");
+        QWERTYctx.clearRect(0, 0, QWERTYcanvas.width, QWERTYcanvas.height);
     }
 
     var QWERTYctx = QWERTYcanvas.getContext("2d");
@@ -387,10 +390,13 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
     QWERTYctx.beginPath();
     QWERTYctx.moveTo(leftUp.x, leftUp.y);
     QWERTYctx.lineTo(rightUp.x, rightUp.y);
+//     QWERTYctx.stroke();
     QWERTYctx.moveTo(rightUp.x, rightUp.y);
     QWERTYctx.lineTo(rightDown.x, rightDown.y);
+//     QWERTYctx.stroke();
     QWERTYctx.moveTo(rightDown.x, rightDown.y);
     QWERTYctx.lineTo(leftDown.x, leftDown.y);
+//     QWERTYctx.stroke();
     QWERTYctx.moveTo(leftDown.x, leftDown.y);
     QWERTYctx.lineTo(leftUp.x, leftUp.y);
     QWERTYctx.stroke();

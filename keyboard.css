@@ -8,7 +8,7 @@ body {
     left: 0;
     top: 0;
 }
-#textOutputLower{
+#textOutputLower {
     position: absolute;
     left: 0;
     top: 0;
@@ -18,7 +18,7 @@ body {
     font-size: 70px;
     opacity: 0.5;
 }
-#textOutputUpper{
+#textOutputUpper {
     position: absolute;
     left: 0;
     top: 0;
@@ -47,6 +47,12 @@ body {
     top: 0;
     z-index: 13;
 }
+#QWERTYcanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 15;
+}
 img {
     width: 980px;
     height: auto;
@@ -60,14 +66,13 @@ img {
     position: absolute;
     top: 560px;
 }
-
-input{
+input {
     width: 100px;
 }
-#sentence{
+#sentence {
     width: 790px;
 }
-#cursor{
+#cursor {
     background-color: yellow;
     width: 5px;
     height: 5px;
