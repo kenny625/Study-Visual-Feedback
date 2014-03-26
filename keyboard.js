@@ -390,15 +390,16 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
     QWERTYctx.beginPath();
     QWERTYctx.moveTo(leftUp.x, leftUp.y);
     QWERTYctx.lineTo(rightUp.x, rightUp.y);
-//     QWERTYctx.stroke();
     QWERTYctx.moveTo(rightUp.x, rightUp.y);
     QWERTYctx.lineTo(rightDown.x, rightDown.y);
-//     QWERTYctx.stroke();
     QWERTYctx.moveTo(rightDown.x, rightDown.y);
     QWERTYctx.lineTo(leftDown.x, leftDown.y);
-//     QWERTYctx.stroke();
     QWERTYctx.moveTo(leftDown.x, leftDown.y);
     QWERTYctx.lineTo(leftUp.x, leftUp.y);
+    QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) / 3 + leftUp.y);
+    QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) / 3 + leftUp.y);
+    QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
+    QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
     QWERTYctx.stroke();
 });;
 
