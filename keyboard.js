@@ -1,7 +1,7 @@
 var canvas = document.getElementById("myCanvas");
 var ctx1 = canvas.getContext("2d");
-var highlightCanvas = document.getElementById("highlightCanvas");
-var highlightCtx = highlightCanvas.getContext("2d");
+var highlightCanvas;
+var highlightCtx;
 var mousePos;
 var IFimg, IF, IFmotion;
 IFimg = new Object();
@@ -10,6 +10,18 @@ IF.startX = 470;
 IF.startY = 140;
 IF.endX = 870;
 IF.endY = 140;
+var leftUp = new Object();
+leftUp.x = 0;
+leftUp.y = 140;
+var leftDown = new Object();
+leftDown.x = 0;
+leftDown.y = 410;
+var rightUp = new Object();
+leftDown.x = 870;
+leftDown.y = 140;
+var rightDown = new Object();
+leftDown.x = 870;
+leftDown.y = 410;
 IFmotion = new Object();
 var keys = new Array();
 var currentKey = 0;
@@ -185,6 +197,7 @@ if ("WebSocket" in window) {
         var received_msg_obj = JSON.parse(received_msg);
         switch (received_msg_obj.action) {
         case "loadLayout":
+                ctx1.clearRect(0, 0, canvas.width, canvas.height);
             if (imgAdjust == false) {
                 scale(img, received_msg_obj.scaleRatio);
                 rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * received_msg_obj.degree);
@@ -214,12 +227,12 @@ if ("WebSocket" in window) {
                 setCursor(received_msg_obj.x, received_msg_obj.y);
                 Voronoi.highlight(keyIndex[received_msg_obj.key]);
                 if (received_msg_obj.lift == true) {
-                    textOutput = textOutput.replace("|",'');
-                    if(received_msg_obj.key == "space"){
+                    textOutput = textOutput.replace("|", '');
+                    if (received_msg_obj.key == "space") {
                         textOutput += " ";
-                    }else if(received_msg_obj.key == "delete"){
+                    } else if (received_msg_obj.key == "delete") {
                         textOutput = textOutput.substring(0, textOutput.length - 1);
-                    }else{
+                    } else {
                         textOutput += received_msg_obj.key;
                     }
                     textOutput += "|";
@@ -240,13 +253,13 @@ if ("WebSocket" in window) {
 }
 
 
-//canvas.addEventListener('mousemove', function (event) {
-//    mousePos = getMousePos(canvas, event);
+document.getElementById('myCanvas').addEventListener('mousemove', function (event) {
+    mousePos = getMousePos(canvas, event);
 //    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-//    //        writeMessage(canvas, message);
-//
-//    //    console.log(mousePos.x);
-//}, false);
+    //        writeMessage(canvas, message);
+
+//        console.log(message);
+}, false);
 
 
 
@@ -340,6 +353,11 @@ document.getElementById('startBtn').addEventListener('click', function (event) {
     start = !start;
     if (start == true) {
         buildKeyIndex();
+        if (document.getElementById('highlightCanvas') == null) {
+            insertCanvas('highlightCanvas');
+        }
+        highlightCanvas = document.getElementById("highlightCanvas");
+        highlightCtx = highlightCanvas.getContext("2d");
         this.innerHTML = "stop";
     } else {
         this.innerHTML = "start";
@@ -353,19 +371,29 @@ document.getElementById('setSentence').addEventListener('click', function (event
 });
 
 document.getElementById('QWERTY').addEventListener('click', function (event) {
-    if(Voronoi.canvas != null){
+    if (Voronoi.canvas != null) {
         Voronoi.canvas.clearRect(0, 0, Voronoi.canvas.width, Voronoi.canvas.height);
     }
     var QWERTYcanvas = document.getElementById('QWERTYcanvas');
-    if(QWERTYcanvas == null){
+    if (QWERTYcanvas == null) {
         insertCanvas('QWERTYcanvas');
-    }else{
+    } else {
         QWERTYcanvas.clearRect(0, 0, QWERTYcanvas.width, QWERTYcanvas.height);
     }
-    
+
     var QWERTYctx = QWERTYcanvas.getContext("2d");
-    
-    
+    QWERTYctx.globalAlpha = 0.5;
+    QWERTYctx.strokeStyle = '#000';
+    QWERTYctx.beginPath();
+    QWERTYctx.moveTo(leftUp.x, leftUp.y);
+    QWERTYctx.lineTo(rightUp.x, rightUp.y);
+    QWERTYctx.moveTo(rightUp.x, rightUp.y);
+    QWERTYctx.lineTo(rightDown.x, rightDown.y);
+    QWERTYctx.moveTo(rightDown.x, rightDown.y);
+    QWERTYctx.lineTo(leftDown.x, leftDown.y);
+    QWERTYctx.moveTo(leftDown.x, leftDown.y);
+    QWERTYctx.lineTo(leftUp.x, leftUp.y);
+    QWERTYctx.stroke();
 });;
 
 function buildKeyIndex() {
@@ -446,12 +474,6 @@ function lineDistance(x1, y1, x2, y2) {
 
 function insertAfter(referenceNode, newNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
-
-function setCharacterPosition() {
-    var pos = new Object();
-    //    pos.x = 
-    //    characterPosition['q'] = 
 }
 
 function insertCanvas(id) {
@@ -654,11 +676,11 @@ var Voronoi = {
             ctx.stroke();
         }
         // how many sites do we have?
-//        var sites = this.sites,
-//            nSites = sites.length;
-//        if (!nSites) {
-//            return;
-//        }
+        //        var sites = this.sites,
+        //            nSites = sites.length;
+        //        if (!nSites) {
+        //            return;
+        //        }
         //        // highlight cell under mouse
         //        var cell = this.diagram.cells[this.sites[0].voronoiId];
         //        // there is no guarantee a Voronoi cell will exist for any
@@ -679,11 +701,11 @@ var Voronoi = {
         //            }
         //        }
         // draw sites
-//        var site;
-//        ctx.beginPath();
-//        ctx.fillStyle = '#44f';
-//
-//        ctx.fill();
+        //        var site;
+        //        ctx.beginPath();
+        //        ctx.fillStyle = '#44f';
+        //
+        //        ctx.fill();
     },
 
     highlight: function (cellIndex) {
