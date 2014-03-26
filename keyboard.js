@@ -255,10 +255,10 @@ if ("WebSocket" in window) {
 
 document.getElementById('myCanvas').addEventListener('mousemove', function (event) {
     mousePos = getMousePos(canvas, event);
-//    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
     //        writeMessage(canvas, message);
 
-//        console.log(message);
+        console.log(message);
 }, false);
 
 
