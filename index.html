@@ -8,9 +8,12 @@
 </head>
 
 <body>
-
+    <div id="textOutputLower">text</div>
+    <div id="textOutputUpper"></div>
     <canvas id="myCanvas" width="980" height="551">
         Sorry, your browser is not supported.
+    </canvas>
+    <canvas id="highlightCanvas" width="980" height="551">
     </canvas>
 
     <img src="img/IMG_2008.JPG" alt="">
@@ -23,15 +26,21 @@
         <select id="modeSelect">
             <option value="rearrange">rearrange</option>
             <option value="add">add</option>
+            <option value="test">test</option>
         </select>
         <button id="setMode">set mode</button>
         <button id="save">save layout</button>
         <button id="load">load layout</button>
+        <button id="startBtn">start</button>
+        <input type="text" id="sentence">
+        <button id="setSentence">set sentence</button>
     </div>
+    <div id="cursor"></div>
 
 
 
     <script type="text/javascript" src="rhill-voronoi-core.min.js"></script>
+    <script src="socketioJS/socket.io.min.js"></script>
     <script src="keyboard.js"></script>
 </body>
 

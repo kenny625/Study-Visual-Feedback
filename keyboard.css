@@ -8,6 +8,25 @@ body {
     left: 0;
     top: 0;
 }
+#textOutputLower{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 980px;
+    height: 75px;
+    z-index: 20;
+    font-size: 70px;
+    opacity: 0.5;
+}
+#textOutputUpper{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 980px;
+    height: 75px;
+    z-index: 25;
+    font-size: 70px;
+}
 #myCanvas {
     position: absolute;
     left: 0;
@@ -21,8 +40,12 @@ body {
     left: 0;
     top: 0;
     z-index: 15;
-    border-color: #0000FF;
-    border-style: solid;
+}
+#highlightCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 13;
 }
 img {
     width: 980px;
@@ -40,4 +63,15 @@ img {
 
 input{
     width: 100px;
+}
+#sentence{
+    width: 790px;
+}
+#cursor{
+    background-color: yellow;
+    width: 5px;
+    height: 5px;
+    position: absolute;
+    top: 551px;
+    left: 980px;
 }

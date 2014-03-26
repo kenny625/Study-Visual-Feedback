@@ -1,5 +1,7 @@
 var canvas = document.getElementById("myCanvas");
 var ctx1 = canvas.getContext("2d");
+var highlightCanvas = document.getElementById("highlightCanvas");
+var highlightCtx = highlightCanvas.getContext("2d");
 var mousePos;
 var IFimg, IF, IFmotion;
 IFimg = new Object();
@@ -18,6 +20,10 @@ var mode = 1; //0 add new site, 1 rearrange site
 var ws;
 var scaleRatio, degree;
 var imgAdjust = false;
+var textOutput = "";
+var textOutputUpper = document.getElementById('textOutputUpper');
+var start = false;
+var keyIndex = new Array();
 var defaultLayoutObj = {
     "layout": [{
         "x": 65,
@@ -117,7 +123,7 @@ var defaultLayoutObj = {
     }, {
         "x": 104,
         "y": 468,
-        "voronoiId": 25,
+        "voronoiId": 27,
         "key": "Z"
     }, {
         "x": 474,
@@ -149,8 +155,24 @@ var defaultLayoutObj = {
         "y": 317,
         "voronoiId": 18,
         "key": "M"
+    }, {
+        "x": 240,
+        "y": 464,
+        "voronoiId": 26,
+        "key": "space"
+    }, {
+        "x": 402,
+        "y": 458,
+        "voronoiId": 25,
+        "key": "delete"
     }]
 };
+//
+//var socket = io.connect('http://192.168.1.91:1338');
+//
+//socket.on('broadcast', function (data) {
+//		console.log(data);
+//	});
 
 if ("WebSocket" in window) {
     ws = new WebSocket("ws://localhost:8080");
@@ -181,6 +203,30 @@ if ("WebSocket" in window) {
                 Voronoi.writeKeyName(Voronoi.sites[i].key, Voronoi.sites[i].x, Voronoi.sites[i].y);
             }
             break;
+        case "ViconData":
+            //                textOutput += received_msg_obj.key;
+            //                received_msg_obj.x;
+            //                received_msg_obj.y;
+            //                received_msg_obj.lift;
+            //                
+            //                textOutputElement.innerHTML = textOutput;
+            if (start) {
+                setCursor(received_msg_obj.x, received_msg_obj.y);
+                Voronoi.highlight(keyIndex[received_msg_obj.key]);
+                if (received_msg_obj.lift == true) {
+                    textOutput = textOutput.replace("|",'');
+                    if(received_msg_obj.key == "space"){
+                        textOutput += " ";
+                    }else if(received_msg_obj.key == "delete"){
+                        textOutput = textOutput.substring(0, textOutput.length - 1);
+                    }else{
+                        textOutput += received_msg_obj.key;
+                    }
+                    textOutput += "|";
+                    textOutputUpper.innerHTML = textOutput;
+                }
+            }
+            break;
         default:
         }
 
@@ -194,13 +240,15 @@ if ("WebSocket" in window) {
 }
 
 
-canvas.addEventListener('mousemove', function (event) {
-    mousePos = getMousePos(canvas, event);
-    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-    //        writeMessage(canvas, message);
+//canvas.addEventListener('mousemove', function (event) {
+//    mousePos = getMousePos(canvas, event);
+//    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+//    //        writeMessage(canvas, message);
+//
+//    //    console.log(mousePos.x);
+//}, false);
 
-    //    console.log(mousePos.x);
-}, false);
+
 
 canvas.addEventListener('click', function (event) {
     if (currentKey == 49) {
@@ -219,6 +267,7 @@ canvas.addEventListener('click', function (event) {
 }, false);
 
 document.getElementById('loadDefault').addEventListener('click', function (event) {
+    ctx1.clearRect(0, 0, canvas.width, canvas.height);
     Voronoi.sites = defaultLayoutObj.layout;
     Voronoi.diagram = Voronoi.voronoi.compute(Voronoi.sites, Voronoi.bbox);
     Voronoi.render();
@@ -242,10 +291,31 @@ document.getElementById('setKey').addEventListener('click', function (event) {
 document.getElementById('setMode').addEventListener('click', function (event) {
     if (document.getElementById('modeSelect').value == 'add') {
         mode = 0;
-    } else {
+    } else if (document.getElementById('modeSelect').value == 'rearrange') {
         mode = 1;
+    } else if (document.getElementById('modeSelect').value == 'test') {
+        document.getElementById('voronoiCanvas').onmousemove = function () {
+            var ViconDataObj = new Object();
+            ViconDataObj.action = "ViconData";
+            ViconDataObj.x = window.event.clientX;
+            ViconDataObj.y = window.event.clientY;
+            ViconDataObj.key = Voronoi.sites[Voronoi.getWhichCell(window.event.clientX, window.event.clientY)].key;
+            ViconDataObj.lift = false;
+            ws.send(JSON.stringify(ViconDataObj));
+        };
+        document.getElementById('voronoiCanvas').onclick = function () {
+            var ViconDataObj = new Object();
+            ViconDataObj.action = "ViconData";
+            ViconDataObj.x = window.event.clientX;
+            ViconDataObj.y = window.event.clientY;
+            ViconDataObj.key = Voronoi.sites[Voronoi.getWhichCell(window.event.clientX, window.event.clientY)].key;
+            ViconDataObj.lift = true;
+            ws.send(JSON.stringify(ViconDataObj));
+        }
     }
+
 });
+
 
 document.getElementById('save').addEventListener('click', function (event) {
     var layoutObj = new Object();
@@ -265,6 +335,27 @@ document.getElementById('load').addEventListener('click', function (event) {
     loadObj.action = "loadLayout";
     ws.send(JSON.stringify(loadObj));
 });
+
+document.getElementById('startBtn').addEventListener('click', function (event) {
+    start = !start;
+    if (start == true) {
+        buildKeyIndex();
+        this.innerHTML = "stop";
+    } else {
+        this.innerHTML = "start";
+    }
+});
+
+document.getElementById('setSentence').addEventListener('click', function (event) {
+    document.getElementById('textOutputLower').innerHTML = document.getElementById('sentence').value;
+});
+
+function buildKeyIndex() {
+    keyIndex = new Array();
+    for (var i = 0; i < Voronoi.sites.length; i++) {
+        keyIndex[Voronoi.sites[i].key] = i;
+    }
+}
 
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
@@ -303,9 +394,6 @@ document.onkeydown = function () {
         ctx1.clearRect(0, 0, canvas.width, canvas.height);
         insertVoronoiCanvas();
         Voronoi.init();
-    } else if (currentKey == 53) {
-        Voronoi.highlight(Voronoi.getWhichCell(500, 500));
-
     }
 }
 
@@ -357,6 +445,11 @@ function insertVoronoiCanvas() {
     insertAfter(document.getElementById("myCanvas"), VoronoiCanvas);
 }
 
+function setCursor(x, y) {
+    var cursor = document.getElementById('cursor');
+    cursor.style['top'] = y + 'px';
+    cursor.style['left'] = x + 'px';
+}
 
 var Voronoi = {
     voronoi: new Voronoi(),
@@ -398,6 +491,7 @@ var Voronoi = {
         var me = this;
         this.canvas = document.getElementById('voronoiCanvas');
         this.ctx = this.canvas.getContext('2d');
+
         //		this.canvas.onmousemove = function(e) {
         //			if (!me.sites.length) {return;}
         //			var site = me.sites[0];
@@ -575,7 +669,8 @@ var Voronoi = {
     },
 
     highlight: function (cellIndex) {
-        ctx = this.ctx;
+        ctx = highlightCtx;
+        ctx.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height);
         var cell = this.diagram.cells[this.sites[cellIndex].voronoiId];
         // there is no guarantee a Voronoi cell will exist for any
         // particular site
