@@ -6,10 +6,10 @@ var mousePos;
 var IFimg, IF, IFmotion;
 IFimg = new Object();
 IF = new Object();
-IF.startX = 470;
-IF.startY = 140;
-IF.endX = 870;
-IF.endY = 140;
+IF.startX = 45;
+IF.startY = 170;
+IF.endX = 45;
+IF.endY = 410;
 var leftUp = new Object();
 leftUp.x = 0;
 leftUp.y = 80;
@@ -707,7 +707,7 @@ if ("WebSocket" in window) {
             ctx1.clearRect(0, 0, canvas.width, canvas.height);
             if (imgAdjust == false) {
                 scale(img, received_msg_obj.scaleRatio);
-                rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * received_msg_obj.degree);
+                rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * (received_msg_obj.degree - 90));
                 move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
                 imgAdjust = true;
             }
@@ -1011,14 +1011,14 @@ document.onkeydown = function () {
         degree = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         scaleRatio = lineDistance(IF.startX, IF.startY, IF.endX, IF.endY) / lineDistance(IFimg.startX, IFimg.startY, IFimg.endX, IFimg.endY);
         scale(img, scaleRatio);
-        rotate(img, IFimg.startX * scaleRatio, IFimg.startY * scaleRatio, (-1) * degree);
+        rotate(img, IFimg.startX * scaleRatio, IFimg.startY * scaleRatio, (-1) * (degree - 90));
         move(img, (-1) * (IFimg.startX * scaleRatio - IF.startX), (-1) * (IFimg.startY * scaleRatio - IF.startY));
         imgAdjust = true;
         currentKey = 0;
         //        ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx1.fillStyle = "#00FF00";
-        ctx1.fillRect(470, 140, 8, 8);
-        ctx1.fillRect(870, 140, 8, 8);
+        ctx1.fillRect(IF.startX, IF.startY, 8, 8);
+        ctx1.fillRect(IF.endX, IF.endY, 8, 8);
     } else if (currentKey == 52) {
         ctx1.clearRect(0, 0, canvas.width, canvas.height);
         insertCanvas('voronoiCanvas');
