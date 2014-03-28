@@ -19,7 +19,7 @@ socket.on('broadcast', function (data) {
 
 wss.on('connection', function (ws) {
     ws.on('message', function (message) {
-        console.log('received: %s', message);
+//        console.log('received: %s', message);
         var message_obj = JSON.parse(message);
         switch (message_obj.action) {
         case "saveLayout":
@@ -43,6 +43,10 @@ wss.on('connection', function (ws) {
             break;
         case "ViconData":
                 wss.broadcast(message);
+                break;
+        case "dumpVertices":
+                wss.broadcast(message);
+                console.log(message_obj.voronoi.W);
                 break;
         default:
         }

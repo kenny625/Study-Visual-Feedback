@@ -179,6 +179,513 @@ var defaultLayoutObj = {
         "key": "delete"
     }]
 };
+
+var QWERTYlayout = {
+    Q: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    W: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    E: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    R: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    T: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    Y: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    U: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    I: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    O: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    P: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    A: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    S: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    D: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    F: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    G: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    H: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    J: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    K: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    L: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    Z: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    X: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    C: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    V: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    B: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    N: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    M: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    space: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    },
+    delete: {
+        "leftUp": {
+            "x": null,
+            "y": null
+        },
+        "rightUp": {
+            "x": null,
+            "y": null
+        },
+        "leftDown": {
+            "x": null,
+            "y": null
+        },
+        "rightDown": {
+            "x": null,
+            "y": null
+        }
+    }
+};
 //
 //var socket = io.connect('http://192.168.1.91:1338');
 //
@@ -197,7 +704,7 @@ if ("WebSocket" in window) {
         var received_msg_obj = JSON.parse(received_msg);
         switch (received_msg_obj.action) {
         case "loadLayout":
-                ctx1.clearRect(0, 0, canvas.width, canvas.height);
+            ctx1.clearRect(0, 0, canvas.width, canvas.height);
             if (imgAdjust == false) {
                 scale(img, received_msg_obj.scaleRatio);
                 rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * received_msg_obj.degree);
@@ -258,7 +765,7 @@ document.getElementById('myCanvas').addEventListener('mousemove', function (even
     var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
     //        writeMessage(canvas, message);
 
-        console.log(message);
+    console.log(message);
 }, false);
 
 
@@ -401,7 +908,76 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
     QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
     QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
     QWERTYctx.stroke();
-});;
+//    generateQWERTYlayout();
+    //    for(var key in QWERTYlayout){
+    //        console.log(QWERTYlayout[key]);
+    //    }
+    
+    console.log(JSON.stringify(Voronoi.diagram.edges));
+    
+});
+
+document.getElementById('dumpVertices').addEventListener('click', function (event) {
+    var dumpVerticesObj = new Object();
+    dumpVerticesObj.action = "dumpVertices";
+    dumpVerticesObj.voronoi = new Object();
+    
+    for(var i=0; i<Voronoi.diagram.cells.length; i++){
+        var vertices = new Array();
+        for(var j=0; j<Voronoi.diagram.cells[i].halfedges.length; j++){
+            vertices.push(Voronoi.diagram.cells[i].halfedges[j].getEndpoint());
+        }
+        dumpVerticesObj.voronoi[Voronoi.diagram.cells[i].site.key] = vertices;
+    }
+    console.log(dumpVerticesObj);
+    ws.send(JSON.stringify(dumpVerticesObj));
+});
+
+function generateQWERTYlayout() {
+//    var obj1 = new Object();
+//    var obj2 = new Object();
+//    var leftUp = new Object();
+//    var leftDown = new Object();
+//    var rightUp = new Object();
+//    var rightDown = new Object();
+    //    for (var key in QWERTYlayout) {
+    //        console.log(key);
+    //        QWERTYlayout[key].leftUp.x = 100;
+    //    }
+    var count = 0;
+    for (var key in QWERTYlayout) {
+        if (count < 10) {
+            QWERTYlayout[key].leftUp.x = leftUp.x + (rightUp.x - leftUp.x) / 10 * count;
+            QWERTYlayout[key].leftUp.y = leftUp.y;
+            QWERTYlayout[key].rightUp.x = leftUp.x + (rightUp.x - leftUp.x) / 10 * (count + 1);
+            QWERTYlayout[key].rightUp.y = rightUp.y;
+            QWERTYlayout[key].leftDown.x = QWERTYlayout[key].leftUp.x;
+            QWERTYlayout[key].leftDown.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
+            QWERTYlayout[key].rightDown.x = QWERTYlayout[key].rightUp.x;
+            QWERTYlayout[key].rightDown.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
+        }else if(count >= 10 && count < 19){
+            QWERTYlayout[key].leftUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 10);
+            QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
+            QWERTYlayout[key].rightUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 10 + 1);
+            QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
+            QWERTYlayout[key].leftDown.x = QWERTYlayout[key].leftUp.x;
+            QWERTYlayout[key].leftDown.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
+            QWERTYlayout[key].rightDown.x = QWERTYlayout[key].rightUp.x;
+            QWERTYlayout[key].rightDown.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
+        }else{
+            QWERTYlayout[key].leftUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 19);
+            QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
+            QWERTYlayout[key].rightUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 19 + 1);
+            QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
+            QWERTYlayout[key].leftDown.x = QWERTYlayout[key].leftUp.x;
+            QWERTYlayout[key].leftDown.y = leftDown.y;
+            QWERTYlayout[key].rightDown.x = QWERTYlayout[key].rightUp.x;
+            QWERTYlayout[key].rightDown.y = leftDown.y;
+        }
+        count++;
+    }
+    console.log(QWERTYlayout);
+}
 
 function buildKeyIndex() {
     keyIndex = new Array();
@@ -447,6 +1023,7 @@ document.onkeydown = function () {
         ctx1.clearRect(0, 0, canvas.width, canvas.height);
         insertCanvas('voronoiCanvas');
         Voronoi.init();
+        currentKey = 0;
     }
 }
 
@@ -568,7 +1145,6 @@ var Voronoi = {
                 me.writeKeyName(key, mouse.x, mouse.y);
                 me.render();
             }
-
         };
         //		this.randomSites(10,true);
         //        me.addSite(100,100);
