@@ -15,13 +15,13 @@ leftUp.x = 0;
 leftUp.y = 80;
 var leftDown = new Object();
 leftDown.x = 0;
-leftDown.y = 410;
+leftDown.y = 390;
 var rightUp = new Object();
-rightUp.x = 870;
+rightUp.x = 800;
 rightUp.y = 80;
 var rightDown = new Object();
-rightDown.x = 870;
-rightDown.y = 410;
+rightDown.x = 800;
+rightDown.y = 390;
 IFmotion = new Object();
 var keys = new Array();
 var currentKey = 0;
@@ -894,26 +894,46 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
     var QWERTYctx = QWERTYcanvas.getContext("2d");
     QWERTYctx.globalAlpha = 0.5;
     QWERTYctx.strokeStyle = '#000';
-    QWERTYctx.beginPath();
-    QWERTYctx.moveTo(leftUp.x, leftUp.y);
-    QWERTYctx.lineTo(rightUp.x, rightUp.y);
-    QWERTYctx.moveTo(rightUp.x, rightUp.y);
-    QWERTYctx.lineTo(rightDown.x, rightDown.y);
-    QWERTYctx.moveTo(rightDown.x, rightDown.y);
-    QWERTYctx.lineTo(leftDown.x, leftDown.y);
-    QWERTYctx.moveTo(leftDown.x, leftDown.y);
-    QWERTYctx.lineTo(leftUp.x, leftUp.y);
-    QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) / 3 + leftUp.y);
-    QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) / 3 + leftUp.y);
-    QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
-    QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
-    QWERTYctx.stroke();
-//    generateQWERTYlayout();
-    //    for(var key in QWERTYlayout){
-    //        console.log(QWERTYlayout[key]);
-    //    }
+//    QWERTYctx.beginPath();
+//    QWERTYctx.moveTo(leftUp.x, leftUp.y);
+//    QWERTYctx.lineTo(rightUp.x, rightUp.y);
+//    QWERTYctx.moveTo(rightUp.x, rightUp.y);
+//    QWERTYctx.lineTo(rightDown.x, rightDown.y);
+//    QWERTYctx.moveTo(rightDown.x, rightDown.y);
+//    QWERTYctx.lineTo(leftDown.x, leftDown.y);
+//    QWERTYctx.moveTo(leftDown.x, leftDown.y);
+//    QWERTYctx.lineTo(leftUp.x, leftUp.y);
+//    QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) / 3 + leftUp.y);
+//    QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) / 3 + leftUp.y);
+//    QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
+//    QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
+    generateQWERTYlayout();
+    for(var key in QWERTYlayout){
+        if(QWERTYlayout[key].leftUp.y == 0 || QWERTYlayout[key].rightUp.y ==9 || QWERTYlayout[key].leftDown.y==0 || QWERTYlayout[key].rightDown.y==0){
+            console.log("0");
+        }
+        console.log(key);
+        QWERTYctx.moveTo(QWERTYlayout[key].leftUp.x, QWERTYlayout[key].leftUp.y);
+        console.log('leftupx '+QWERTYlayout[key].leftUp.x+' leftupy '+QWERTYlayout[key].leftUp.y);
+        QWERTYctx.lineTo(QWERTYlayout[key].rightUp.x, QWERTYlayout[key].rightUp.y);
+        console.log('rightupx '+QWERTYlayout[key].rightUp.x+' rightupy '+QWERTYlayout[key].rightUp.y);
+        QWERTYctx.moveTo(QWERTYlayout[key].rightUp.x, QWERTYlayout[key].rightUp.y);
+        QWERTYctx.lineTo(QWERTYlayout[key].rightDown.x, QWERTYlayout[key].rightDown.y);
+        QWERTYctx.moveTo(QWERTYlayout[key].rightDown.x, QWERTYlayout[key].rightDown.y);
+        QWERTYctx.lineTo(QWERTYlayout[key].leftDown.x, QWERTYlayout[key].leftDown.y);
+        QWERTYctx.moveTo(QWERTYlayout[key].leftDown.x, QWERTYlayout[key].leftDown.y);
+        QWERTYctx.lineTo(QWERTYlayout[key].leftUp.x, QWERTYlayout[key].leftUp.y);
+        QWERTYctx.stroke();
+        QWERTYctx.globalAlpha = 1;
+        QWERTYctx.clearRect(QWERTYlayout[key].center.x - 5, QWERTYlayout[key].center.y - 5, 10, 10);
+        QWERTYctx.font = '30pt Calibri';
+        if(key == "space" || key == "delete"){
+            QWERTYctx.font = '15pt Calibri';
+        }
+        QWERTYctx.fillStyle = '#00FF00';
+        QWERTYctx.fillText(key, QWERTYlayout[key].center.x - 10, QWERTYlayout[key].center.y + 10);
+    }
     
-    console.log(JSON.stringify(Voronoi.diagram.edges));
     
 });
 
@@ -934,16 +954,6 @@ document.getElementById('dumpVertices').addEventListener('click', function (even
 });
 
 function generateQWERTYlayout() {
-//    var obj1 = new Object();
-//    var obj2 = new Object();
-//    var leftUp = new Object();
-//    var leftDown = new Object();
-//    var rightUp = new Object();
-//    var rightDown = new Object();
-    //    for (var key in QWERTYlayout) {
-    //        console.log(key);
-    //        QWERTYlayout[key].leftUp.x = 100;
-    //    }
     var count = 0;
     for (var key in QWERTYlayout) {
         if (count < 10) {
@@ -959,7 +969,7 @@ function generateQWERTYlayout() {
             QWERTYlayout[key].leftUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 10);
             QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
             QWERTYlayout[key].rightUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 10 + 1);
-            QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
+            QWERTYlayout[key].rightUp.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
             QWERTYlayout[key].leftDown.x = QWERTYlayout[key].leftUp.x;
             QWERTYlayout[key].leftDown.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
             QWERTYlayout[key].rightDown.x = QWERTYlayout[key].rightUp.x;
@@ -968,12 +978,16 @@ function generateQWERTYlayout() {
             QWERTYlayout[key].leftUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 19);
             QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
             QWERTYlayout[key].rightUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 19 + 1);
-            QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
+            QWERTYlayout[key].rightUp.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
             QWERTYlayout[key].leftDown.x = QWERTYlayout[key].leftUp.x;
             QWERTYlayout[key].leftDown.y = leftDown.y;
             QWERTYlayout[key].rightDown.x = QWERTYlayout[key].rightUp.x;
             QWERTYlayout[key].rightDown.y = leftDown.y;
         }
+        var center = new Object();
+        center.x = (QWERTYlayout[key].leftUp.x + QWERTYlayout[key].rightUp.x) / 2;
+        center.y = (QWERTYlayout[key].leftUp.y + QWERTYlayout[key].leftDown.y) / 2;
+        QWERTYlayout[key].center = center;
         count++;
     }
     console.log(QWERTYlayout);
