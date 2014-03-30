@@ -36,6 +36,7 @@ var textOutput = "";
 var textOutputUpper = document.getElementById('textOutputUpper');
 var start = false;
 var keyIndex = new Array();
+var inQWERTY = false;
 var defaultLayoutObj = {
     "layout": [{
         "x": 65,
@@ -787,6 +788,7 @@ canvas.addEventListener('click', function (event) {
 }, false);
 
 document.getElementById('loadDefault').addEventListener('click', function (event) {
+    inQWERTY = false;
     ctx1.clearRect(0, 0, canvas.width, canvas.height);
     Voronoi.sites = defaultLayoutObj.layout;
     Voronoi.diagram = Voronoi.voronoi.compute(Voronoi.sites, Voronoi.bbox);
@@ -828,7 +830,11 @@ document.getElementById('setMode').addEventListener('click', function (event) {
             ViconDataObj.action = "ViconData";
             ViconDataObj.x = window.event.clientX;
             ViconDataObj.y = window.event.clientY;
-            ViconDataObj.key = Voronoi.sites[Voronoi.getWhichCell(window.event.clientX, window.event.clientY)].key;
+            if(inQWERTY == false){
+                ViconDataObj.key = Voronoi.sites[Voronoi.getWhichCell(window.event.clientX, window.event.clientY)].key;
+            }else{
+                
+            }
             ViconDataObj.lift = true;
             ws.send(JSON.stringify(ViconDataObj));
         }
@@ -851,6 +857,7 @@ document.getElementById('save').addEventListener('click', function (event) {
 });
 
 document.getElementById('load').addEventListener('click', function (event) {
+    inQWERTY = false;
     var loadObj = new Object();
     loadObj.action = "loadLayout";
     ws.send(JSON.stringify(loadObj));
@@ -878,6 +885,7 @@ document.getElementById('setSentence').addEventListener('click', function (event
 });
 
 document.getElementById('QWERTY').addEventListener('click', function (event) {
+    inQWERTY = true;
     ctx1.clearRect(0, 0, canvas.width, canvas.height);
     if (Voronoi.canvas != null) {
         Voronoi.ctx.clearRect(0, 0, Voronoi.canvas.width, Voronoi.canvas.height);
@@ -894,25 +902,9 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
     var QWERTYctx = QWERTYcanvas.getContext("2d");
     QWERTYctx.globalAlpha = 0.5;
     QWERTYctx.strokeStyle = '#000';
-//    QWERTYctx.beginPath();
-//    QWERTYctx.moveTo(leftUp.x, leftUp.y);
-//    QWERTYctx.lineTo(rightUp.x, rightUp.y);
-//    QWERTYctx.moveTo(rightUp.x, rightUp.y);
-//    QWERTYctx.lineTo(rightDown.x, rightDown.y);
-//    QWERTYctx.moveTo(rightDown.x, rightDown.y);
-//    QWERTYctx.lineTo(leftDown.x, leftDown.y);
-//    QWERTYctx.moveTo(leftDown.x, leftDown.y);
-//    QWERTYctx.lineTo(leftUp.x, leftUp.y);
-//    QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) / 3 + leftUp.y);
-//    QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) / 3 + leftUp.y);
-//    QWERTYctx.moveTo(leftUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
-//    QWERTYctx.lineTo(rightUp.x, (leftDown.y - leftUp.y) * 2 / 3 + leftUp.y);
+
     generateQWERTYlayout();
     for(var key in QWERTYlayout){
-        if(QWERTYlayout[key].leftUp.y == 0 || QWERTYlayout[key].rightUp.y ==9 || QWERTYlayout[key].leftDown.y==0 || QWERTYlayout[key].rightDown.y==0){
-            console.log("0");
-        }
-        console.log(key);
         QWERTYctx.moveTo(QWERTYlayout[key].leftUp.x, QWERTYlayout[key].leftUp.y);
         console.log('leftupx '+QWERTYlayout[key].leftUp.x+' leftupy '+QWERTYlayout[key].leftUp.y);
         QWERTYctx.lineTo(QWERTYlayout[key].rightUp.x, QWERTYlayout[key].rightUp.y);
@@ -941,6 +933,7 @@ document.getElementById('dumpVertices').addEventListener('click', function (even
     var dumpVerticesObj = new Object();
     dumpVerticesObj.action = "dumpVertices";
     dumpVerticesObj.voronoi = new Object();
+    dumpVerticesObj.center = new Object();
     
     for(var i=0; i<Voronoi.diagram.cells.length; i++){
         var vertices = new Array();
@@ -948,6 +941,10 @@ document.getElementById('dumpVertices').addEventListener('click', function (even
             vertices.push(Voronoi.diagram.cells[i].halfedges[j].getEndpoint());
         }
         dumpVerticesObj.voronoi[Voronoi.diagram.cells[i].site.key] = vertices;
+        var centerObj = new Object();
+        centerObj.x = Voronoi.diagram.cells[i].site.x;
+        centerObj.y = Voronoi.diagram.cells[i].site.y;
+        dumpVerticesObj.center[Voronoi.diagram.cells[i].site.key] = centerObj;
     }
     console.log(dumpVerticesObj);
     ws.send(JSON.stringify(dumpVerticesObj));
