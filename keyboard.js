@@ -929,6 +929,39 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
     
 });
 
+document.getElementById('dumpQWERTY').addEventListener('click', function (event) {
+    var dumpQWERTYObj = new Object();
+    dumpQWERTYObj.action = "dumpQWERTY";
+    dumpQWERTYObj.QWERTY = new Object();
+    dumpQWERTYObj.center = new Object();
+    
+    for(var key in QWERTYlayout){
+        var vertices = new Array();
+        var pointObj = new Object();
+        pointObj.x = QWERTYlayout[key].leftUp.x;
+        pointObj.y = QWERTYlayout[key].leftUp.y;
+        vertices.push(pointObj);
+        pointObj = new Object();
+        pointObj.x = QWERTYlayout[key].leftDown.x;
+        pointObj.y = QWERTYlayout[key].leftDown.y;
+        vertices.push(pointObj);
+        pointObj = new Object();
+        pointObj.x = QWERTYlayout[key].rightUp.x;
+        pointObj.y = QWERTYlayout[key].rightUp.y;
+        vertices.push(pointObj);
+        pointObj = new Object();
+        pointObj.x = QWERTYlayout[key].rightDown.x;
+        pointObj.y = QWERTYlayout[key].rightDown.y;
+        vertices.push(pointObj);
+        var centerObj = new Object();
+        centerObj.x = QWERTYlayout[key].center.x;
+        centerObj.y = QWERTYlayout[key].center.y;
+        dumpQWERTYObj.QWERTY[key] = vertices;
+        dumpQWERTYObj.center[key] = centerObj;
+    }
+    console.log(dumpQWERTYObj);
+});
+
 document.getElementById('dumpVertices').addEventListener('click', function (event) {
     var dumpVerticesObj = new Object();
     dumpVerticesObj.action = "dumpVertices";
