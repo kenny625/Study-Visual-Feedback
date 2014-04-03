@@ -980,6 +980,7 @@ document.getElementById('dumpQWERTY').addEventListener('click', function (event)
         dumpQWERTYObj.QWERTY[key] = vertices;
         dumpQWERTYObj.center[key] = centerObj;
     }
+    ws.send(JSON.parse(dumpQWERTYObj));
     console.log(dumpQWERTYObj);
 });
 
