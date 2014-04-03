@@ -886,7 +886,7 @@ document.getElementById('setSentence').addEventListener('click', function (event
     var sentenceObj = new Object();
     sentenceObj.action = "sentence"
     sentenceObj.sentence = sentence;
-    ws.send(sentenceObj);
+    ws.send(JSON.stringify(sentenceObj));
 });
 
 document.getElementById('QWERTY').addEventListener('click', function (event) {
