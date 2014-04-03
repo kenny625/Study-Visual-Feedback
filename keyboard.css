@@ -3,7 +3,7 @@ body {
     height: 551px;
     margin: 0;
     padding: 0;
-    background-color: black;
+    background-color: #FEFFAF;
     position: absolute;
     left: 0;
     top: 0;
@@ -16,7 +16,7 @@ body {
     height: 75px;
     z-index: 20;
     font-size: 70px;
-    opacity: 0.5;
+    opacity: 0.2;
 }
 #textOutputUpper {
     position: absolute;

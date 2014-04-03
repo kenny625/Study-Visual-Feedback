@@ -6,16 +6,16 @@ var WebSocketServer = require('ws').Server,
     });
 var savedLayout;
 var userName;
-var io = require('socket.io-client');
-var socket = io.connect('http://192.168.1.91:1338');
-socket.on('connect', function(){
-  socket.emit('broadcast', "test");
-    console.log("test");
-});
-socket.on('broadcast', function (data) {
-		         console.log(data);
-			    // socket.emit('my other event', { my: 'data' });
-			      });
+//var io = require('socket.io-client');
+//var socket = io.connect('http://192.168.1.91:1338');
+//socket.on('connect', function(){
+//  socket.emit('broadcast', "test");
+//    console.log("test");
+//});
+//socket.on('broadcast', function (data) {
+//		         console.log(data);
+//			    // socket.emit('my other event', { my: 'data' });
+//			      });
 
 wss.on('connection', function (ws) {
     ws.on('message', function (message) {
@@ -45,6 +45,9 @@ wss.on('connection', function (ws) {
                 wss.broadcast(message);
                 break;
         case "dumpVertices":
+                wss.broadcast(message);
+                break;
+        case "sentence":
                 wss.broadcast(message);
                 break;
         default:

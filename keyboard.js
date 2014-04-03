@@ -881,7 +881,12 @@ document.getElementById('startBtn').addEventListener('click', function (event) {
 document.getElementById('setSentence').addEventListener('click', function (event) {
     document.getElementById('textOutputUpper').innerHTML = "";
     textOutput = "";
-    document.getElementById('textOutputLower').innerHTML = document.getElementById('sentence').value;
+    var sentence = document.getElementById('sentence').value;
+    document.getElementById('textOutputLower').innerHTML = sentence;
+    var sentenceObj = new Object();
+    sentenceObj.action = "sentence"
+    sentenceObj.sentence = sentence;
+    ws.send(sentenceObj);
 });
 
 document.getElementById('QWERTY').addEventListener('click', function (event) {
