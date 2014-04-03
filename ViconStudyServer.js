@@ -57,6 +57,9 @@ wss.on('connection', function (ws) {
                 wss.broadcast(message);
                 break;
             case "dumpVertices":
+                wss.broadcast(message);   
+                break;
+            case "dumpQWERTY":
                 wss.broadcast(message);
                 break;
             case "sentence":
