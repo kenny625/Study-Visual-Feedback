@@ -724,6 +724,15 @@ if ("WebSocket" in window) {
                 Voronoi.writeKeyName(Voronoi.sites[i].key, Voronoi.sites[i].x, Voronoi.sites[i].y);
             }
             break;
+        case "setHand":
+                ctx1.clearRect(0, 0, canvas.width, canvas.height);
+            if (imgAdjust == false) {
+                scale(img, received_msg_obj.scaleRatio);
+                rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * (received_msg_obj.degree - 90));
+                move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
+                imgAdjust = true;
+            }
+                break;
         case "ViconData":
             //                textOutput += received_msg_obj.key;
             //                received_msg_obj.x;
@@ -862,6 +871,13 @@ document.getElementById('load').addEventListener('click', function (event) {
     loadObj.action = "loadLayout";
     ws.send(JSON.stringify(loadObj));
 });
+
+document.getElementById('setHand').addEventListener('click', function (event) {
+    var loadObj = new Object();
+    loadObj.action = "setHand";
+    ws.send(JSON.stringify(loadObj));
+});
+
 
 document.getElementById('startBtn').addEventListener('click', function (event) {
     start = !start;

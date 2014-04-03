@@ -26,6 +26,17 @@ wss.on('connection', function (ws) {
             savedLayout = message_obj.layout;
             writeToFile(message);
             break;
+        case "setHand":
+            var layoutObj = new Object();
+            try {
+                layoutObj = JSON.parse(fs.readFileSync(filepath + userName + ".txt").toString());
+            } catch (e) {
+                console.log(e);
+            }
+            layoutObj.action = "setHand";
+            wss.broadcast(JSON.stringify(layoutObj));
+            //                ws.send(JSON.stringify(layoutObj));
+            break;
         case "loadLayout":
             var layoutObj = new Object();
             try {
@@ -42,14 +53,14 @@ wss.on('connection', function (ws) {
             console.log(userName);
             break;
         case "ViconData":
-                wss.broadcast(message);
-                break;
+            wss.broadcast(message);
+            break;
         case "dumpVertices":
-                wss.broadcast(message);
-                break;
+            wss.broadcast(message);
+            break;
         case "sentence":
-                wss.broadcast(message);
-                break;
+            wss.broadcast(message);
+            break;
         default:
         }
     });
