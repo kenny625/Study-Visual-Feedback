@@ -1298,7 +1298,13 @@ var Voronoi = {
         var me = this;
         this.canvas = document.getElementById('voronoiCanvas');
         this.ctx = this.canvas.getContext('2d');
+document.getElementById('voronoiCanvas').addEventListener('mousemove', function (event) {
+    mousePos = getMousePos(canvas, event);
+    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+    //        writeMessage(canvas, message);
 
+    console.log(message);
+}, false);
         //		this.canvas.onmousemove = function(e) {
         //			if (!me.sites.length) {return;}
         //			var site = me.sites[0];
