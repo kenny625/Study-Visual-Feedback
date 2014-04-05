@@ -68,6 +68,9 @@ wss.on('connection', function (ws) {
             case "whichLayout":
                 wss.broadcast(message);
                 break;
+            case "TouchPadData":
+                wss.broadcast(message);
+                break;
             default:
             }
         } catch (err) {
