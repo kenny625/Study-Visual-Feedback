@@ -71,10 +71,16 @@ input {
     width: 790px;
 }
 #cursor {
-    background-color: yellow;
+    background-color: red;
     width: 5px;
     height: 5px;
     position: absolute;
     top: 551px;
     left: 980px;
+}
+.numberDisplay {
+    width: 30px
+}
+span {
+    display: inline;
 }

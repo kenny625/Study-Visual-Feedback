@@ -41,6 +41,19 @@
             <option value="Trackpad">Trackpad</option>
         </select>
         <button id="broadcastLayout">Broadcast layout</button>
+        <input type="range" id="scaleSlider" min="0.5" max="2" step="0.05"/>
+        <input type="text" id="scaleRatio" class="numberDisplay" value="1">
+        <button id="setScale">Set Scale</button>
+        <span id="ref1">ref1</span>
+        <span id="ref2">ref2</span>
+        <input type="range" id="xSlider" min="-100" max="100" step="5"/>
+        <input type="text" id="shiftX" class="numberDisplay" value="0">
+        <button id="setX">Set x</button>
+        <span id="xOutput">0</span>
+        <input type="range" id="ySlider" min="-200" max="200" step="5"/>
+        <input type="text" id="shiftY" class="numberDisplay" value="0">
+        <button id="setY">Set y</button>
+        <span id="yOutput">0</span>
     </div>
     <div id="cursor"></div>
 

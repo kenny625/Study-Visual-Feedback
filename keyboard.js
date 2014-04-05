@@ -10,6 +10,8 @@ IF.startX = 45;
 IF.startY = 170;
 IF.endX = 45;
 IF.endY = 410;
+var shiftX = 0,
+    shiftY = 0;
 var leftUp = new Object();
 leftUp.x = 0;
 leftUp.y = 80;
@@ -26,6 +28,11 @@ IFmotion = new Object();
 var keys = new Array();
 var currentKey = 0;
 var img = document.getElementsByTagName('img')[0];
+var imgWidth = img.offsetWidth;
+var imgTop = img.style['top'];
+imgTop = imgTop.replace('px', '');
+var imgLeft = img.style['left'];
+imgLeft = imgLeft.replace('px', '');
 var characterPosition = new Array();
 var lastMousePos = new Object();
 var mode = 1; //0 add new site, 1 rearrange site  
@@ -708,9 +715,20 @@ if ("WebSocket" in window) {
             ctx1.clearRect(0, 0, canvas.width, canvas.height);
             if (imgAdjust == false) {
                 scale(img, received_msg_obj.scaleRatio);
+                scaleRatio = received_msg_obj.scaleRatio;
                 rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * (received_msg_obj.degree - 90));
-                move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
+                if(received_msg_obj.shift == false){
+                    move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
+                }else{
+                    move(img, received_msg_obj.imgLeft, received_msg_obj.imgTop);
+                }
+                
                 imgAdjust = true;
+                syncSlider();
+                imgTop = img.style['top'];
+                imgTop = imgTop.replace('px', '');
+                imgLeft = img.style['left'];
+                imgLeft = imgLeft.replace('px', '');
             }
             if (document.getElementById('voronoiCanvas') == null) {
                 insertCanvas('voronoiCanvas');
@@ -725,14 +743,18 @@ if ("WebSocket" in window) {
             }
             break;
         case "setHand":
-                ctx1.clearRect(0, 0, canvas.width, canvas.height);
+            ctx1.clearRect(0, 0, canvas.width, canvas.height);
             if (imgAdjust == false) {
                 scale(img, received_msg_obj.scaleRatio);
                 rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * (received_msg_obj.degree - 90));
-                move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
+                if(received_msg_obj.shift == false){
+                    move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
+                }else{
+                    move(img, received_msg_obj.imgLeft, received_msg_obj.imgTop);
+                }
                 imgAdjust = true;
             }
-                break;
+            break;
         case "ViconData":
             //                textOutput += received_msg_obj.key;
             //                received_msg_obj.x;
@@ -839,10 +861,10 @@ document.getElementById('setMode').addEventListener('click', function (event) {
             ViconDataObj.action = "ViconData";
             ViconDataObj.x = window.event.clientX;
             ViconDataObj.y = window.event.clientY;
-            if(inQWERTY == false){
+            if (inQWERTY == false) {
                 ViconDataObj.key = Voronoi.sites[Voronoi.getWhichCell(window.event.clientX, window.event.clientY)].key;
-            }else{
-                
+            } else {
+
             }
             ViconDataObj.lift = true;
             ws.send(JSON.stringify(ViconDataObj));
@@ -862,6 +884,17 @@ document.getElementById('save').addEventListener('click', function (event) {
     layoutObj.endY = IFimg.endY;
     layoutObj.scaleRatio = scaleRatio;
     layoutObj.degree = degree;
+    var currentImgTop = img.style['top'];
+    currentImgTop = currentImgTop.replace('px', '');
+    var currentImgLeft = img.style['left'];
+    currentImgLeft = currentImgLeft.replace('px', '');
+    if(currentImgTop != imgTop || currentImgLeft != imgLeft){
+        layoutObj.imgTop = currentImgTop;
+        layoutObj.imgLeft = currentImgLeft;
+        layoutObj.shift = true;
+    }else{
+        layoutObj.shift = false;
+    }
     ws.send(JSON.stringify(layoutObj));
 });
 
@@ -925,11 +958,11 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
     QWERTYctx.strokeStyle = '#000';
 
     generateQWERTYlayout();
-    for(var key in QWERTYlayout){
+    for (var key in QWERTYlayout) {
         QWERTYctx.moveTo(QWERTYlayout[key].leftUp.x, QWERTYlayout[key].leftUp.y);
-        console.log('leftupx '+QWERTYlayout[key].leftUp.x+' leftupy '+QWERTYlayout[key].leftUp.y);
+        console.log('leftupx ' + QWERTYlayout[key].leftUp.x + ' leftupy ' + QWERTYlayout[key].leftUp.y);
         QWERTYctx.lineTo(QWERTYlayout[key].rightUp.x, QWERTYlayout[key].rightUp.y);
-        console.log('rightupx '+QWERTYlayout[key].rightUp.x+' rightupy '+QWERTYlayout[key].rightUp.y);
+        console.log('rightupx ' + QWERTYlayout[key].rightUp.x + ' rightupy ' + QWERTYlayout[key].rightUp.y);
         QWERTYctx.moveTo(QWERTYlayout[key].rightUp.x, QWERTYlayout[key].rightUp.y);
         QWERTYctx.lineTo(QWERTYlayout[key].rightDown.x, QWERTYlayout[key].rightDown.y);
         QWERTYctx.moveTo(QWERTYlayout[key].rightDown.x, QWERTYlayout[key].rightDown.y);
@@ -940,14 +973,14 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
         QWERTYctx.globalAlpha = 1;
         QWERTYctx.clearRect(QWERTYlayout[key].center.x - 5, QWERTYlayout[key].center.y - 5, 10, 10);
         QWERTYctx.font = '30pt Calibri';
-        if(key == "space" || key == "delete"){
+        if (key == "space" || key == "delete") {
             QWERTYctx.font = '15pt Calibri';
         }
         QWERTYctx.fillStyle = '#00FF00';
         QWERTYctx.fillText(key, QWERTYlayout[key].center.x - 10, QWERTYlayout[key].center.y + 10);
     }
-    
-    
+
+
 });
 
 document.getElementById('dumpQWERTY').addEventListener('click', function (event) {
@@ -955,8 +988,8 @@ document.getElementById('dumpQWERTY').addEventListener('click', function (event)
     dumpQWERTYObj.action = "dumpQWERTY";
     dumpQWERTYObj.QWERTY = new Object();
     dumpQWERTYObj.center = new Object();
-    
-    for(var key in QWERTYlayout){
+
+    for (var key in QWERTYlayout) {
         var vertices = new Array();
         var pointObj = new Object();
         pointObj.x = QWERTYlayout[key].leftUp.x;
@@ -989,10 +1022,10 @@ document.getElementById('dumpVertices').addEventListener('click', function (even
     dumpVerticesObj.action = "dumpVertices";
     dumpVerticesObj.voronoi = new Object();
     dumpVerticesObj.center = new Object();
-    
-    for(var i=0; i<Voronoi.diagram.cells.length; i++){
+
+    for (var i = 0; i < Voronoi.diagram.cells.length; i++) {
         var vertices = new Array();
-        for(var j=0; j<Voronoi.diagram.cells[i].halfedges.length; j++){
+        for (var j = 0; j < Voronoi.diagram.cells[i].halfedges.length; j++) {
             vertices.push(Voronoi.diagram.cells[i].halfedges[j].getEndpoint());
         }
         dumpVerticesObj.voronoi[Voronoi.diagram.cells[i].site.key] = vertices;
@@ -1012,6 +1045,61 @@ document.getElementById('broadcastLayout').addEventListener('click', function (e
     ws.send(JSON.stringify(broadcastLayoutObj));
 });
 
+var ref1 = document.getElementById('ref1');
+var ref2 = document.getElementById('ref2');
+ref1.innerHTML = IF.startX + ' ' + IF.startY;
+ref2.innerHTML = IF.endX + ' ' + IF.endY;
+
+document.getElementById('setScale').addEventListener('click', function (event) {
+    document.getElementById('scaleSlider').value = document.getElementById('scaleRatio').value;
+    scaleRatio = document.getElementById('scaleRatio').value;
+    resetTransformOrigin();
+    scale(img, scaleRatio);
+    ref1.innerHTML = (IF.startX * scaleRatio).toFixed(2) + ' ' + (IF.startY * scaleRatio).toFixed(2);
+    ref2.innerHTML = (IF.endX * scaleRatio).toFixed(2) + ' ' + (IF.endY * scaleRatio).toFixed(2);
+
+});
+
+document.getElementById('scaleSlider').onchange = function () {
+    document.getElementById('scaleRatio').value = this.value;
+    scaleRatio = this.value;
+    resetTransformOrigin();
+    scale(img, scaleRatio);
+    ref1.innerHTML = (IF.startX * scaleRatio).toFixed(2) + ' ' + (IF.startY * scaleRatio).toFixed(2);
+    ref2.innerHTML = (IF.endX * scaleRatio).toFixed(2) + ' ' + (IF.endY * scaleRatio).toFixed(2);
+};
+
+
+document.getElementById('setX').addEventListener('click', function (event) {
+    document.getElementById('xSlider').value = document.getElementById('shiftX').value;
+    shiftX = document.getElementById('shiftX').value;
+    move(img, Number(shiftX), document.getElementById('shiftY').value);
+    document.getElementById('xOutput').innerHTML = shiftX;
+});
+
+document.getElementById('xSlider').onchange = function () {
+    document.getElementById('shiftX').value = this.value;
+    shiftX = this.value;
+    move(img, Number(shiftX), document.getElementById('shiftY').value);
+    document.getElementById('xOutput').innerHTML = shiftX;
+};
+
+
+
+document.getElementById('setY').addEventListener('click', function (event) {
+    document.getElementById('ySlider').value = document.getElementById('shiftY').value;
+    shiftY = document.getElementById('shiftY').value;
+    move(img, document.getElementById('shiftX').value, Number(shiftY));
+    document.getElementById('yOutput').innerHTML = shiftY;
+});
+
+document.getElementById('ySlider').onchange = function () {
+    document.getElementById('shiftY').value = this.value;
+    shiftY = this.value;
+    move(img, document.getElementById('shiftX').value, Number(shiftY));
+    document.getElementById('yOutput').innerHTML = shiftY;
+};
+
 function generateQWERTYlayout() {
     var count = 0;
     for (var key in QWERTYlayout) {
@@ -1024,7 +1112,7 @@ function generateQWERTYlayout() {
             QWERTYlayout[key].leftDown.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
             QWERTYlayout[key].rightDown.x = QWERTYlayout[key].rightUp.x;
             QWERTYlayout[key].rightDown.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
-        }else if(count >= 10 && count < 19){
+        } else if (count >= 10 && count < 19) {
             QWERTYlayout[key].leftUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 10);
             QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) / 3;
             QWERTYlayout[key].rightUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 10 + 1);
@@ -1033,7 +1121,7 @@ function generateQWERTYlayout() {
             QWERTYlayout[key].leftDown.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
             QWERTYlayout[key].rightDown.x = QWERTYlayout[key].rightUp.x;
             QWERTYlayout[key].rightDown.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
-        }else{
+        } else {
             QWERTYlayout[key].leftUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 19);
             QWERTYlayout[key].leftUp.y = leftUp.y + (leftDown.y - leftUp.y) * 2 / 3;
             QWERTYlayout[key].rightUp.x = leftUp.x + (rightUp.x - leftUp.x) / 9 * (count - 19 + 1);
@@ -1086,6 +1174,7 @@ document.onkeydown = function () {
         scale(img, scaleRatio);
         rotate(img, IFimg.startX * scaleRatio, IFimg.startY * scaleRatio, (-1) * (degree - 90));
         move(img, (-1) * (IFimg.startX * scaleRatio - IF.startX), (-1) * (IFimg.startY * scaleRatio - IF.startY));
+        syncSlider();
         imgAdjust = true;
         currentKey = 0;
         //        ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1105,18 +1194,39 @@ function drawPoint(x, y) {
     ctx1.fillRect(x - 4, y - 4, 8, 8);
 }
 
+function resetTransformOrigin() {
+    img.style['WebkitTransformOrigin'] = '0px 0px';
+}
+
+function syncSlider() {
+    document.getElementById('scaleSlider').value = scaleRatio;
+    document.getElementById('scaleRatio').value = scaleRatio;
+    var top = img.style['top'];
+    top = top.replace('px', '');
+    var left = img.style['left'];
+    left = left.replace('px', '');
+    document.getElementById('shiftY').value = top;
+    document.getElementById('ySlider').value = top;
+    document.getElementById('yOutput').innerHTML = top;
+    document.getElementById('shiftX').value = left;
+    document.getElementById('xSlider').value = left;
+    document.getElementById('xOutput').innerHTML = left;
+}
+
 function rotate(img, transformOriginX, transformOriginY, degree) {
     img.style['WebkitTransformOrigin'] = transformOriginX + 'px ' + transformOriginY + 'px';
     img.style['webkitTransform'] = 'rotate(' + degree + 'deg)';
 }
 
 function move(img, left, top) {
+    console.log(img.style['left']);
+    console.log(img.style['top']);
     img.style['left'] = left + 'px';
     img.style['top'] = top + 'px';
 }
 
 function scale(img, ratio) {
-    img.style['width'] = img.offsetWidth * ratio + 'px';
+    img.style['width'] = imgWidth * ratio + 'px';
 }
 
 function lineDistance(x1, y1, x2, y2) {
