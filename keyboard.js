@@ -1005,6 +1005,13 @@ document.getElementById('dumpVertices').addEventListener('click', function (even
     ws.send(JSON.stringify(dumpVerticesObj));
 });
 
+document.getElementById('broadcastLayout').addEventListener('click', function (event) {
+    var broadcastLayoutObj = new Object();
+    broadcastLayoutObj.action = "whichLayout";
+    broadcastLayoutObj.which = document.getElementById('layoutSelect').value;
+    ws.send(JSON.stringify(broadcastLayoutObj));
+});
+
 function generateQWERTYlayout() {
     var count = 0;
     for (var key in QWERTYlayout) {
