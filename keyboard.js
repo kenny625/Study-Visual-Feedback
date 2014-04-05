@@ -967,12 +967,12 @@ document.getElementById('dumpQWERTY').addEventListener('click', function (event)
         pointObj.y = QWERTYlayout[key].leftDown.y;
         vertices.push(pointObj);
         pointObj = new Object();
-        pointObj.x = QWERTYlayout[key].rightUp.x;
-        pointObj.y = QWERTYlayout[key].rightUp.y;
-        vertices.push(pointObj);
-        pointObj = new Object();
         pointObj.x = QWERTYlayout[key].rightDown.x;
         pointObj.y = QWERTYlayout[key].rightDown.y;
+        vertices.push(pointObj);
+        pointObj = new Object();
+        pointObj.x = QWERTYlayout[key].rightUp.x;
+        pointObj.y = QWERTYlayout[key].rightUp.y;
         vertices.push(pointObj);
         var centerObj = new Object();
         centerObj.x = QWERTYlayout[key].center.x;
