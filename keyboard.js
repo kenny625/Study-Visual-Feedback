@@ -753,6 +753,11 @@ if ("WebSocket" in window) {
                     move(img, received_msg_obj.imgLeft, received_msg_obj.imgTop);
                 }
                 imgAdjust = true;
+                syncSlider();
+                imgTop = img.style['top'];
+                imgTop = imgTop.replace('px', '');
+                imgLeft = img.style['left'];
+                imgLeft = imgLeft.replace('px', '');
             }
             break;
         case "ViconData":
