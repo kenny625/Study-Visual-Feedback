@@ -717,18 +717,17 @@ if ("WebSocket" in window) {
                 scale(img, received_msg_obj.scaleRatio);
                 scaleRatio = received_msg_obj.scaleRatio;
                 rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * (received_msg_obj.degree - 90));
-                if(received_msg_obj.shift == false){
+                if (received_msg_obj.shift == false) {
                     move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
-                }else{
+                } else {
                     move(img, received_msg_obj.imgLeft, received_msg_obj.imgTop);
                 }
-                
+
                 imgAdjust = true;
+                scaleRatio = received_msg_obj.scaleRatio;
                 syncSlider();
-                imgTop = img.style['top'];
-                imgTop = imgTop.replace('px', '');
-                imgLeft = img.style['left'];
-                imgLeft = imgLeft.replace('px', '');
+                imgTop = received_msg_obj.refImgTop;
+                imgLeft = received_msg_obj.refImgLeft;
             }
             if (document.getElementById('voronoiCanvas') == null) {
                 insertCanvas('voronoiCanvas');
@@ -747,17 +746,16 @@ if ("WebSocket" in window) {
             if (imgAdjust == false) {
                 scale(img, received_msg_obj.scaleRatio);
                 rotate(img, received_msg_obj.startX * received_msg_obj.scaleRatio, received_msg_obj.startY * received_msg_obj.scaleRatio, (-1) * (received_msg_obj.degree - 90));
-                if(received_msg_obj.shift == false){
+                if (received_msg_obj.shift == false) {
                     move(img, (-1) * (received_msg_obj.startX * received_msg_obj.scaleRatio - IF.startX), (-1) * (received_msg_obj.startY * received_msg_obj.scaleRatio - IF.startY));
-                }else{
+                } else {
                     move(img, received_msg_obj.imgLeft, received_msg_obj.imgTop);
                 }
                 imgAdjust = true;
+                scaleRatio = received_msg_obj.scaleRatio;
                 syncSlider();
-                imgTop = img.style['top'];
-                imgTop = imgTop.replace('px', '');
-                imgLeft = img.style['left'];
-                imgLeft = imgLeft.replace('px', '');
+                imgTop = received_msg_obj.refImgTop;
+                imgLeft = received_msg_obj.refImgLeft;
             }
             break;
         case "ViconData":
@@ -893,11 +891,13 @@ document.getElementById('save').addEventListener('click', function (event) {
     currentImgTop = currentImgTop.replace('px', '');
     var currentImgLeft = img.style['left'];
     currentImgLeft = currentImgLeft.replace('px', '');
-    if(currentImgTop != imgTop || currentImgLeft != imgLeft){
+    layoutObj.refImgTop = imgTop;
+    layoutObj.refImgLeft = imgLeft;
+    if (currentImgTop != imgTop || currentImgLeft != imgLeft) {
         layoutObj.imgTop = currentImgTop;
         layoutObj.imgLeft = currentImgLeft;
         layoutObj.shift = true;
-    }else{
+    } else {
         layoutObj.shift = false;
     }
     ws.send(JSON.stringify(layoutObj));
@@ -1055,31 +1055,34 @@ var ref2 = document.getElementById('ref2');
 ref1.innerHTML = IF.startX + ' ' + IF.startY;
 ref2.innerHTML = IF.endX + ' ' + IF.endY;
 
+var customRef1x = 45;
+var customRef1y = 170;
+var customRef2x = 45;
+var customRef2y = 410;
+
 document.getElementById('setScale').addEventListener('click', function (event) {
     document.getElementById('scaleSlider').value = document.getElementById('scaleRatio').value;
     scaleRatio = document.getElementById('scaleRatio').value;
-    resetTransformOrigin();
+//    resetTransformOrigin();
     scale(img, scaleRatio);
-    ref1.innerHTML = (IF.startX * scaleRatio).toFixed(2) + ' ' + (IF.startY * scaleRatio).toFixed(2);
-    ref2.innerHTML = (IF.endX * scaleRatio).toFixed(2) + ' ' + (IF.endY * scaleRatio).toFixed(2);
+    syncRefPoints('ratio');
 
 });
 
 document.getElementById('scaleSlider').onchange = function () {
     document.getElementById('scaleRatio').value = this.value;
     scaleRatio = this.value;
-    resetTransformOrigin();
+//    resetTransformOrigin();
     scale(img, scaleRatio);
-    ref1.innerHTML = (IF.startX * scaleRatio).toFixed(2) + ' ' + (IF.startY * scaleRatio).toFixed(2);
-    ref2.innerHTML = (IF.endX * scaleRatio).toFixed(2) + ' ' + (IF.endY * scaleRatio).toFixed(2);
+    syncRefPoints('ratio');
 };
-
 
 document.getElementById('setX').addEventListener('click', function (event) {
     document.getElementById('xSlider').value = document.getElementById('shiftX').value;
     shiftX = document.getElementById('shiftX').value;
     move(img, Number(shiftX), document.getElementById('shiftY').value);
     document.getElementById('xOutput').innerHTML = shiftX;
+    syncRefPoints('move');
 });
 
 document.getElementById('xSlider').onchange = function () {
@@ -1087,15 +1090,15 @@ document.getElementById('xSlider').onchange = function () {
     shiftX = this.value;
     move(img, Number(shiftX), document.getElementById('shiftY').value);
     document.getElementById('xOutput').innerHTML = shiftX;
+    syncRefPoints('move');
 };
-
-
 
 document.getElementById('setY').addEventListener('click', function (event) {
     document.getElementById('ySlider').value = document.getElementById('shiftY').value;
     shiftY = document.getElementById('shiftY').value;
     move(img, document.getElementById('shiftX').value, Number(shiftY));
     document.getElementById('yOutput').innerHTML = shiftY;
+    syncRefPoints('move');
 });
 
 document.getElementById('ySlider').onchange = function () {
@@ -1103,7 +1106,32 @@ document.getElementById('ySlider').onchange = function () {
     shiftY = this.value;
     move(img, document.getElementById('shiftX').value, Number(shiftY));
     document.getElementById('yOutput').innerHTML = shiftY;
+    syncRefPoints('move');
 };
+
+function getCurrentImageLeftandTop(attribute) {
+    if (attribute == 'left') {
+        var currentImgLeft = img.style['left'];
+        currentImgLeft = currentImgLeft.replace('px', '');
+        return currentImgLeft;
+    } else if (attribute == 'top') {
+        var currentImgTop = img.style['top'];
+        currentImgTop = currentImgTop.replace('px', '');
+        return currentImgTop;
+    }
+}
+
+function syncRefPoints(ratioOrMoveFirst){
+    var currentImgTop = getCurrentImageLeftandTop('top');
+    var currentImgLeft = getCurrentImageLeftandTop('left');
+    if(ratioOrMoveFirst == 'ratio'){
+        ref1.innerHTML = ((customRef1x + (Number(currentImgLeft) - Number(imgLeft))) * scaleRatio).toFixed(2) + ' ' + ((customRef1y + (Number(currentImgTop) - Number(imgTop))) * scaleRatio).toFixed(2);
+    ref2.innerHTML = ((customRef2x + (Number(currentImgLeft) - Number(imgLeft))) * scaleRatio).toFixed(2) + ' ' + ((customRef2y + (Number(currentImgTop) - Number(imgTop))) * scaleRatio).toFixed(2);
+    }else if(ratioOrMoveFirst == 'move'){
+        ref1.innerHTML = (customRef1x * scaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef1y * scaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
+    ref2.innerHTML = (customRef2x * scaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef2y * scaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
+}
+    }
 
 function generateQWERTYlayout() {
     var count = 0;
@@ -1179,6 +1207,10 @@ document.onkeydown = function () {
         scale(img, scaleRatio);
         rotate(img, IFimg.startX * scaleRatio, IFimg.startY * scaleRatio, (-1) * (degree - 90));
         move(img, (-1) * (IFimg.startX * scaleRatio - IF.startX), (-1) * (IFimg.startY * scaleRatio - IF.startY));
+        imgTop = img.style['top'];
+        imgTop = imgTop.replace('px', '');
+        imgLeft = img.style['left'];
+        imgLeft = imgLeft.replace('px', '');
         syncSlider();
         imgAdjust = true;
         currentKey = 0;
@@ -1224,8 +1256,8 @@ function rotate(img, transformOriginX, transformOriginY, degree) {
 }
 
 function move(img, left, top) {
-    console.log(img.style['left']);
-    console.log(img.style['top']);
+    //    console.log(img.style['left']);
+    //    console.log(img.style['top']);
     img.style['left'] = left + 'px';
     img.style['top'] = top + 'px';
 }
@@ -1303,13 +1335,13 @@ var Voronoi = {
         var me = this;
         this.canvas = document.getElementById('voronoiCanvas');
         this.ctx = this.canvas.getContext('2d');
-document.getElementById('voronoiCanvas').addEventListener('mousemove', function (event) {
-    mousePos = getMousePos(canvas, event);
-    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
-    //        writeMessage(canvas, message);
+        document.getElementById('voronoiCanvas').addEventListener('mousemove', function (event) {
+            mousePos = getMousePos(canvas, event);
+            var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+            //        writeMessage(canvas, message);
 
-    console.log(message);
-}, false);
+            console.log(message);
+        }, false);
         //		this.canvas.onmousemove = function(e) {
         //			if (!me.sites.length) {return;}
         //			var site = me.sites[0];
