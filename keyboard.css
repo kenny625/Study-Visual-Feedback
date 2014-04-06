@@ -17,6 +17,8 @@ body {
     z-index: 20;
     font-size: 70px;
     opacity: 0.2;
+    border-color: gray;
+    border-style: solid;
 }
 #textOutputUpper {
     position: absolute;
@@ -32,6 +34,8 @@ body {
     left: 0;
     top: 0;
     z-index: 10;
+    border-color: gray;
+    border-style: solid;
 }
 #voronoiCanvas {
     position: absolute;

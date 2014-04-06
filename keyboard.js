@@ -1,3 +1,4 @@
+var ip = '192.168.1.3';
 var canvas = document.getElementById("myCanvas");
 var ctx1 = canvas.getContext("2d");
 var highlightCanvas;
@@ -13,10 +14,10 @@ IF.endY = 410;
 var shiftX = 0,
     shiftY = 0;
 var leftUp = new Object();
-leftUp.x = 0;
+leftUp.x = 100;
 leftUp.y = 80;
 var leftDown = new Object();
-leftDown.x = 0;
+leftDown.x = 100;
 leftDown.y = 390;
 var rightUp = new Object();
 rightUp.x = 800;
@@ -702,7 +703,7 @@ var QWERTYlayout = {
 //	});
 
 if ("WebSocket" in window) {
-    ws = new WebSocket("ws://localhost:8080");
+    ws = new WebSocket("ws://" + ip + ":8080");
     ws.onopen = function () {
         // Web Socket is connected, send data using send()
     };
@@ -728,6 +729,7 @@ if ("WebSocket" in window) {
                 syncSlider();
                 imgTop = received_msg_obj.refImgTop;
                 imgLeft = received_msg_obj.refImgLeft;
+                syncRefPoints('ratio');
             }
             if (document.getElementById('voronoiCanvas') == null) {
                 insertCanvas('voronoiCanvas');
@@ -756,6 +758,7 @@ if ("WebSocket" in window) {
                 syncSlider();
                 imgTop = received_msg_obj.refImgTop;
                 imgLeft = received_msg_obj.refImgLeft;
+                syncRefPoints('ratio');
             }
             break;
         case "ViconData":
@@ -781,6 +784,19 @@ if ("WebSocket" in window) {
                     textOutputUpper.innerHTML = textOutput;
                 }
             }
+            break;
+        case "loadQWERTY":
+            leftUp = received_msg_obj.leftUp;
+            leftDown = received_msg_obj.leftDown;
+            rightUp = received_msg_obj.rightUp;
+            rightDown = received_msg_obj.rightDown;
+            drawQWERTY();
+            break;
+        case "sentence":
+            document.getElementById('textOutputUpper').innerHTML = "";
+            textOutput = "";
+            var sentence = received_msg_obj.sentence;
+            document.getElementById('textOutputLower').innerHTML = sentence;
             break;
         default:
         }
@@ -938,12 +954,26 @@ document.getElementById('setSentence').addEventListener('click', function (event
     var sentence = document.getElementById('sentence').value;
     document.getElementById('textOutputLower').innerHTML = sentence;
     var sentenceObj = new Object();
-    sentenceObj.action = "sentence"
+    sentenceObj.action = "sentence";
     sentenceObj.sentence = sentence;
     ws.send(JSON.stringify(sentenceObj));
+    document.getElementById('textOutputLower').style['border-style'] = 'none';
 });
 
 document.getElementById('QWERTY').addEventListener('click', function (event) {
+    drawQWERTY();
+
+    var QWERTYObj = new Object();
+    QWERTYObj.action = "loadQWERTY";
+    QWERTYObj.leftUp = leftUp;
+    QWERTYObj.leftDown = leftDown;
+    QWERTYObj.rightUp = rightUp;
+    QWERTYObj.rightDown = rightDown;
+    ws.send(JSON.stringify(QWERTYObj));
+
+});
+
+function drawQWERTY() {
     inQWERTY = true;
     ctx1.clearRect(0, 0, canvas.width, canvas.height);
     if (Voronoi.canvas != null) {
@@ -984,9 +1014,7 @@ document.getElementById('QWERTY').addEventListener('click', function (event) {
         QWERTYctx.fillStyle = '#00FF00';
         QWERTYctx.fillText(key, QWERTYlayout[key].center.x - 10, QWERTYlayout[key].center.y + 10);
     }
-
-
-});
+}
 
 document.getElementById('dumpQWERTY').addEventListener('click', function (event) {
     var dumpQWERTYObj = new Object();
@@ -1063,7 +1091,7 @@ var customRef2y = 410;
 document.getElementById('setScale').addEventListener('click', function (event) {
     document.getElementById('scaleSlider').value = document.getElementById('scaleRatio').value;
     scaleRatio = document.getElementById('scaleRatio').value;
-//    resetTransformOrigin();
+    //    resetTransformOrigin();
     scale(img, scaleRatio);
     syncRefPoints('ratio');
 
@@ -1072,7 +1100,7 @@ document.getElementById('setScale').addEventListener('click', function (event) {
 document.getElementById('scaleSlider').onchange = function () {
     document.getElementById('scaleRatio').value = this.value;
     scaleRatio = this.value;
-//    resetTransformOrigin();
+    //    resetTransformOrigin();
     scale(img, scaleRatio);
     syncRefPoints('ratio');
 };
@@ -1121,17 +1149,17 @@ function getCurrentImageLeftandTop(attribute) {
     }
 }
 
-function syncRefPoints(ratioOrMoveFirst){
+function syncRefPoints(ratioOrMoveFirst) {
     var currentImgTop = getCurrentImageLeftandTop('top');
     var currentImgLeft = getCurrentImageLeftandTop('left');
-    if(ratioOrMoveFirst == 'ratio'){
+    if (ratioOrMoveFirst == 'ratio') {
         ref1.innerHTML = ((customRef1x + (Number(currentImgLeft) - Number(imgLeft))) * scaleRatio).toFixed(2) + ' ' + ((customRef1y + (Number(currentImgTop) - Number(imgTop))) * scaleRatio).toFixed(2);
-    ref2.innerHTML = ((customRef2x + (Number(currentImgLeft) - Number(imgLeft))) * scaleRatio).toFixed(2) + ' ' + ((customRef2y + (Number(currentImgTop) - Number(imgTop))) * scaleRatio).toFixed(2);
-    }else if(ratioOrMoveFirst == 'move'){
+        ref2.innerHTML = ((customRef2x + (Number(currentImgLeft) - Number(imgLeft))) * scaleRatio).toFixed(2) + ' ' + ((customRef2y + (Number(currentImgTop) - Number(imgTop))) * scaleRatio).toFixed(2);
+    } else if (ratioOrMoveFirst == 'move') {
         ref1.innerHTML = (customRef1x * scaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef1y * scaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
-    ref2.innerHTML = (customRef2x * scaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef2y * scaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
-}
+        ref2.innerHTML = (customRef2x * scaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef2y * scaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
     }
+}
 
 function generateQWERTYlayout() {
     var count = 0;

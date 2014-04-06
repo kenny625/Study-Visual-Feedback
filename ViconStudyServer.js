@@ -51,6 +51,7 @@ wss.on('connection', function (ws) {
                 break;
             case "setName":
                 userName = message_obj.userName;
+                wss.broadcast(message);
                 console.log(userName);
                 break;
             case "ViconData":
@@ -69,6 +70,9 @@ wss.on('connection', function (ws) {
                 wss.broadcast(message);
                 break;
             case "TouchPadData":
+                wss.broadcast(message);
+                break;
+            case "loadQWERTY":
                 wss.broadcast(message);
                 break;
             default:
