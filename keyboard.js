@@ -39,6 +39,7 @@ var lastMousePos = new Object();
 var mode = 1; //0 add new site, 1 rearrange site  
 var ws;
 var scaleRatio, degree;
+var currentScaleRatio;
 var imgAdjust = false;
 var textOutput = "";
 var textOutputUpper = document.getElementById('textOutputUpper');
@@ -726,6 +727,9 @@ if ("WebSocket" in window) {
 
                 imgAdjust = true;
                 scaleRatio = received_msg_obj.scaleRatio;
+                currentScaleRatio = received_msg_obj.currentScaleRatio;
+                if(typeof currentScaleRatio == 'undefined')currentScaleRatio = scaleRatio;
+                scale(img, received_msg_obj.currentScaleRatio);
                 syncSlider();
                 imgTop = received_msg_obj.refImgTop;
                 imgLeft = received_msg_obj.refImgLeft;
@@ -755,6 +759,9 @@ if ("WebSocket" in window) {
                 }
                 imgAdjust = true;
                 scaleRatio = received_msg_obj.scaleRatio;
+                currentScaleRatio = received_msg_obj.currentScaleRatio;
+                if(typeof currentScaleRatio == 'undefined')currentScaleRatio = scaleRatio;
+                scale(img, received_msg_obj.currentScaleRatio);
                 syncSlider();
                 imgTop = received_msg_obj.refImgTop;
                 imgLeft = received_msg_obj.refImgLeft;
@@ -916,6 +923,7 @@ document.getElementById('save').addEventListener('click', function (event) {
     } else {
         layoutObj.shift = false;
     }
+    layoutObj.currentScaleRatio = currentScaleRatio;
     ws.send(JSON.stringify(layoutObj));
 });
 
@@ -1090,18 +1098,18 @@ var customRef2y = 410;
 
 document.getElementById('setScale').addEventListener('click', function (event) {
     document.getElementById('scaleSlider').value = document.getElementById('scaleRatio').value;
-    scaleRatio = document.getElementById('scaleRatio').value;
+    currentScaleRatio = document.getElementById('scaleRatio').value;
     //    resetTransformOrigin();
-    scale(img, scaleRatio);
+    scale(img, currentScaleRatio);
     syncRefPoints('ratio');
 
 });
 
 document.getElementById('scaleSlider').onchange = function () {
     document.getElementById('scaleRatio').value = this.value;
-    scaleRatio = this.value;
+    currentScaleRatio = this.value;
     //    resetTransformOrigin();
-    scale(img, scaleRatio);
+    scale(img, currentScaleRatio);
     syncRefPoints('ratio');
 };
 
@@ -1153,11 +1161,11 @@ function syncRefPoints(ratioOrMoveFirst) {
     var currentImgTop = getCurrentImageLeftandTop('top');
     var currentImgLeft = getCurrentImageLeftandTop('left');
     if (ratioOrMoveFirst == 'ratio') {
-        ref1.innerHTML = ((customRef1x + (Number(currentImgLeft) - Number(imgLeft))) * scaleRatio).toFixed(2) + ' ' + ((customRef1y + (Number(currentImgTop) - Number(imgTop))) * scaleRatio).toFixed(2);
-        ref2.innerHTML = ((customRef2x + (Number(currentImgLeft) - Number(imgLeft))) * scaleRatio).toFixed(2) + ' ' + ((customRef2y + (Number(currentImgTop) - Number(imgTop))) * scaleRatio).toFixed(2);
+        ref1.innerHTML = ((customRef1x + (Number(currentImgLeft) - Number(imgLeft))) * currentScaleRatio).toFixed(2) + ' ' + ((customRef1y + (Number(currentImgTop) - Number(imgTop))) * currentScaleRatio).toFixed(2);
+        ref2.innerHTML = ((customRef2x + (Number(currentImgLeft) - Number(imgLeft))) * currentScaleRatio).toFixed(2) + ' ' + ((customRef2y + (Number(currentImgTop) - Number(imgTop))) * currentScaleRatio).toFixed(2);
     } else if (ratioOrMoveFirst == 'move') {
-        ref1.innerHTML = (customRef1x * scaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef1y * scaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
-        ref2.innerHTML = (customRef2x * scaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef2y * scaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
+        ref1.innerHTML = (customRef1x * currentScaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef1y * currentScaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
+        ref2.innerHTML = (customRef2x * currentScaleRatio + (Number(currentImgLeft) - Number(imgLeft))).toFixed(2) + ' ' + (customRef2y * currentScaleRatio + (Number(currentImgTop) - Number(imgTop))).toFixed(2);
     }
 }
 
@@ -1232,6 +1240,7 @@ document.onkeydown = function () {
         var deltaY = IFimg.endY - IFimg.startY;
         degree = Math.atan2(deltaY, deltaX) / Math.PI * 180;
         scaleRatio = lineDistance(IF.startX, IF.startY, IF.endX, IF.endY) / lineDistance(IFimg.startX, IFimg.startY, IFimg.endX, IFimg.endY);
+        currentScaleRatio = scaleRatio;
         scale(img, scaleRatio);
         rotate(img, IFimg.startX * scaleRatio, IFimg.startY * scaleRatio, (-1) * (degree - 90));
         move(img, (-1) * (IFimg.startX * scaleRatio - IF.startX), (-1) * (IFimg.startY * scaleRatio - IF.startY));
@@ -1264,8 +1273,8 @@ function resetTransformOrigin() {
 }
 
 function syncSlider() {
-    document.getElementById('scaleSlider').value = scaleRatio;
-    document.getElementById('scaleRatio').value = scaleRatio;
+    document.getElementById('scaleSlider').value = currentScaleRatio;
+    document.getElementById('scaleRatio').value = currentScaleRatio;
     var top = img.style['top'];
     top = top.replace('px', '');
     var left = img.style['left'];
