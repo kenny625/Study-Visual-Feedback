@@ -14,17 +14,17 @@ IF.endY = 410;
 var shiftX = 0,
     shiftY = 0;
 var leftUp = new Object();
-leftUp.x = 100;
-leftUp.y = 80;
+leftUp.x = 0;
+leftUp.y = 95;
 var leftDown = new Object();
-leftDown.x = 100;
-leftDown.y = 390;
+leftDown.x = 0;
+leftDown.y = 346;
 var rightUp = new Object();
-rightUp.x = 800;
-rightUp.y = 80;
+rightUp.x = 900;
+rightUp.y = 95;
 var rightDown = new Object();
-rightDown.x = 800;
-rightDown.y = 390;
+rightDown.x = 900;
+rightDown.y = 346;
 IFmotion = new Object();
 var keys = new Array();
 var currentKey = 0;
@@ -728,7 +728,7 @@ if ("WebSocket" in window) {
                 imgAdjust = true;
                 scaleRatio = received_msg_obj.scaleRatio;
                 currentScaleRatio = received_msg_obj.currentScaleRatio;
-                if(typeof currentScaleRatio == 'undefined')currentScaleRatio = scaleRatio;
+                if (typeof currentScaleRatio == 'undefined') currentScaleRatio = scaleRatio;
                 scale(img, received_msg_obj.currentScaleRatio);
                 syncSlider();
                 imgTop = received_msg_obj.refImgTop;
@@ -760,7 +760,7 @@ if ("WebSocket" in window) {
                 imgAdjust = true;
                 scaleRatio = received_msg_obj.scaleRatio;
                 currentScaleRatio = received_msg_obj.currentScaleRatio;
-                if(typeof currentScaleRatio == 'undefined')currentScaleRatio = scaleRatio;
+                if (typeof currentScaleRatio == 'undefined') currentScaleRatio = scaleRatio;
                 scale(img, received_msg_obj.currentScaleRatio);
                 syncSlider();
                 imgTop = received_msg_obj.refImgTop;
@@ -777,7 +777,12 @@ if ("WebSocket" in window) {
             //                textOutputElement.innerHTML = textOutput;
             if (start) {
                 setCursor(received_msg_obj.x, received_msg_obj.y);
-                Voronoi.highlight(keyIndex[received_msg_obj.key]);
+                if (inQWERTY) {
+                    highLightQWERTY(received_msg_obj.key);
+                } else {
+                    Voronoi.highlight(keyIndex[received_msg_obj.key]);
+                }
+
                 if (received_msg_obj.lift == true) {
                     textOutput = textOutput.replace("|", '');
                     if (received_msg_obj.key == "space") {
@@ -1003,9 +1008,7 @@ function drawQWERTY() {
     generateQWERTYlayout();
     for (var key in QWERTYlayout) {
         QWERTYctx.moveTo(QWERTYlayout[key].leftUp.x, QWERTYlayout[key].leftUp.y);
-        console.log('leftupx ' + QWERTYlayout[key].leftUp.x + ' leftupy ' + QWERTYlayout[key].leftUp.y);
         QWERTYctx.lineTo(QWERTYlayout[key].rightUp.x, QWERTYlayout[key].rightUp.y);
-        console.log('rightupx ' + QWERTYlayout[key].rightUp.x + ' rightupy ' + QWERTYlayout[key].rightUp.y);
         QWERTYctx.moveTo(QWERTYlayout[key].rightUp.x, QWERTYlayout[key].rightUp.y);
         QWERTYctx.lineTo(QWERTYlayout[key].rightDown.x, QWERTYlayout[key].rightDown.y);
         QWERTYctx.moveTo(QWERTYlayout[key].rightDown.x, QWERTYlayout[key].rightDown.y);
@@ -1330,6 +1333,21 @@ function setCursor(x, y) {
     var cursor = document.getElementById('cursor');
     cursor.style['top'] = y + 'px';
     cursor.style['left'] = x + 'px';
+}
+
+function highLightQWERTY(key) {
+    highlightCtx.clearRect(0, 0, highlightCanvas.width, highlightCanvas.height);
+    highlightCtx.beginPath();
+    highlightCtx.moveTo(QWERTYlayout[key].leftUp.x, QWERTYlayout[key].leftUp.y);
+    highlightCtx.lineTo(QWERTYlayout[key].rightUp.x, QWERTYlayout[key].rightUp.y);
+    highlightCtx.lineTo(QWERTYlayout[key].rightDown.x, QWERTYlayout[key].rightDown.y);
+    highlightCtx.lineTo(QWERTYlayout[key].leftDown.x, QWERTYlayout[key].leftDown.y);
+    highlightCtx.lineTo(QWERTYlayout[key].leftUp.x, QWERTYlayout[key].leftUp.y);
+    highlightCtx.closePath();
+    highlightCtx.globalAlpha = 0.5;
+    highlightCtx.fillStyle = '#faa';
+    highlightCtx.fill();
+
 }
 
 var Voronoi = {
