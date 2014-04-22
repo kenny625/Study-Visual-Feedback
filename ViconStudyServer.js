@@ -6,6 +6,7 @@ var WebSocketServer = require('ws').Server,
     });
 var savedLayout;
 var userName;
+var calibrateOrder = ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'space', 'delete'];
 //var io = require('socket.io-client');
 //var socket = io.connect('http://192.168.1.91:1338');
 //socket.on('connect', function(){
@@ -25,7 +26,7 @@ wss.on('connection', function (ws) {
             switch (message_obj.action) {
             case "saveLayout":
                 savedLayout = message_obj.layout;
-                writeToFile(message);
+                writeToFile(message, filepath + userName + ".txt");
                 break;
             case "setHand":
                 var layoutObj = new Object();
@@ -62,6 +63,11 @@ wss.on('connection', function (ws) {
                 break;
             case "dumpQWERTY":
                 wss.broadcast(message);
+                    writeToFile('', '\/Volumes\/RamDisk\/calibrateOrder.txt');
+                for (var i = 0; i < calibrateOrder.length; i++) {
+                    var line = message_obj.center[calibrateOrder[i]].x + ',' + message_obj.center[calibrateOrder[i]].y + '\n';
+                    appendToFile(line, '\/Volumes\/RamDisk\/calibrateOrder.txt');
+                }
                 break;
             case "sentence":
                 wss.broadcast(message);
@@ -93,6 +99,10 @@ wss.broadcast = function (data) {
 };
 
 
-function writeToFile(data) {
-    fs.writeFileSync(filepath + userName + ".txt", data);
+function writeToFile(data, filepath) {
+    fs.writeFileSync(filepath, data);
+}
+
+function appendToFile(data, filepath) {
+    fs.appendFileSync(filepath, data);
 }
